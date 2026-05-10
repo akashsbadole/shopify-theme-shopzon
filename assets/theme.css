@@ -475,8 +475,17 @@ select.field-input { appearance: none; background-image: url("data:image/svg+xml
 .category-card__link { font-size: var(--font-size-sm); color: var(--color-link); margin-top: var(--space-3); display: block; font-weight: 500; }
 
 /* ============================================
-   COLLECTION / FILTER LAYOUT
+   BASE LAYOUT
    ============================================ */
+.site-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+#MainContent {
+  flex: 1;
+}
+
 .collection-layout { display: grid; grid-template-columns: 240px 1fr; gap: var(--space-5); align-items: start; }
 .collection-sidebar { background: var(--color-surface-white); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: var(--space-4); }
 .filter-group { padding-bottom: var(--space-4); margin-bottom: var(--space-4); border-bottom: 1px solid var(--color-divider); }
@@ -614,7 +623,7 @@ select.field-input { appearance: none; background-image: url("data:image/svg+xml
 /* ============================================
    FOOTER
    ============================================ */
-.site-footer { margin-top: var(--space-8); }
+.site-footer { margin-top: var(--space-8); flex-shrink: 0; }
 .footer-back-top { background: var(--color-nav-dark-hover); color: var(--color-text-white); text-align: center; padding: var(--space-4); font-size: var(--font-size-sm); cursor: pointer; }
 .footer-back-top:hover { background: var(--color-nav-dark); }
 .footer-main { background: var(--color-nav-dark); color: var(--color-text-white); padding: var(--space-8) var(--page-gutter); }

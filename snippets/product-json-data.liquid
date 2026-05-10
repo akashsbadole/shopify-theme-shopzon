@@ -11,6 +11,9 @@
   "price": {{ product.price }},
   "featured_image": {{ product.featured_image | image_url: width: 300 | json }},
   "available": {{ product.available }},
-  "tags": {{ product.tags | json }}
+  "tags": {{ product.tags | json }},
+  "description": {{ product.description | strip_html | json }},
+  "has_only_default_variant": {{ product.has_only_default_variant }},
+  "options": {{ product.options_with_values | json }}
 }
 </script>

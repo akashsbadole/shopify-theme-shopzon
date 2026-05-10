@@ -7,47 +7,110 @@
   <meta name="theme-color" content="#232F3E">
 
   {%- if page_description -%}
-    <meta name="description" content="{{ page_description | escape }}">
+    {%- assign meta_desc = page_description | escape -%}
+    {%- if meta_desc.size > 160 -%}
+      {%- assign meta_desc = meta_desc | truncate: 155 -%}{{ '...' -}}
+    {%- endif -%}
+    <meta name="description" content="{{ meta_desc }}">
+  {%- elsif settings.seo_default_description -%}
+    <meta name="description" content="{{ settings.seo_default_description | escape }}">
   {%- endif -%}
 
-  <!-- Open Graph / Social Sharing (Requirement #13) -->
-  <meta property="og:site_name" content="{{ shop.name }}">
-  <meta property="og:url" content="{{ canonical_url }}">
-  <meta property="og:title" content="{{ page_title | escape }}">
-  {%- if page_description -%}
-    <meta property="og:description" content="{{ page_description | escape }}">
-  {%- endif -%}
-  {%- if page_image -%}
-    <meta property="og:image" content="{{ page_image | image_url: width: 1200 }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="628">
-    <meta name="twitter:image" content="{{ page_image | image_url: width: 1200 }}">
-  {%- elsif settings.social_sharing_image -%}
-    <meta property="og:image" content="{{ settings.social_sharing_image | image_url: width: 1200 }}">
-  {%- endif -%}
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page_title | escape }}">
-  {%- if page_description -%}
-    <meta name="twitter:description" content="{{ page_description | escape }}">
+  {%- assign noindex_templates = 'cart,search,blog,account,login,register,reset_password,orders,order,addresses' | split: ',' -%}
+  {%- assign is_noindex = false -%}
+  {%- if noindex_templates contains template.name -%}
+    {%- assign is_noindex = true -%}
+  {%- elsif template.name == 'collection' and collection.handle != 'all' and settings.seo_noindex_collections -%}
+    {%- assign is_noindex = true -%}
+  {%- elsif template.name == 'search' and settings.seo_noindex_search -%}
+    {%- assign is_noindex = true -%}
+  {%- elsif template.name == 'blog' and settings.seo_noindex_blog -%}
+    {%- assign is_noindex = true -%}
   {%- endif -%}
 
-  <!-- Canonical URL (SEO requirement #11) -->
+  {%- if is_noindex -%}
+    <meta name="robots" content="noindex,{% if template.name == 'blog' %}follow{% else %}nofollow{% endif %}">
+  {%- else -%}
+    <meta name="robots" content="index, follow">
+  {%- endif -%}
+
+  {%- if settings.seo_google_verify -%}
+    <meta name="google-site-verification" content="{{ settings.seo_google_verify }}">
+  {%- endif -%}
+
+  {%- if settings.seo_bing_verify -%}
+    <meta name="msvalidate.01" content="{{ settings.seo_bing_verify }}">
+  {%- endif -%}
+
+  {%- if settings.seo_keywords and template.name == 'product' -%}
+    <meta name="keywords" content="{{ settings.seo_keywords }}">
+  {%- endif -%}
+
+  <title>
+    {% if seo_title %}{{ seo_title | escape }}
+    {% elsif template.name == 'product' and product %}
+      {{ product.title | escape }} | {{ shop.name }} | Free Shipping
+    {% elsif template.name == 'collection' and collection %}
+      {{ collection.title | escape }} - Buy Online at {{ shop.name }}
+    {% elsif template.name == 'blog' and blog %}
+      {{ blog.title | escape }} - {{ shop.name }} Blog
+    {% elsif template.name == 'article' and article %}
+      {{ article.title | escape }} | {{ shop.name }}
+    {% else %}
+      {{ page_title | escape }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+    {% endif %}
+  </title>
+
   <link rel="canonical" href="{{ canonical_url }}">
+  {%- for locale in localization.available -%}
+  <link rel="alternate" hreflang="{{ locale.iso_code }}" href="{{ request.origin }}{{ request.path }}?locale_id={{ locale.id }}">
+  {%- endfor -%}
+  <link rel="alternate" hreflang="x-default" href="{{ request.origin }}{{ request.path }}">
 
   {%- if settings.favicon != blank -%}
     <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
   {%- endif -%}
 
-  <title>
-    {{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
-  </title>
-
-  <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.google.com">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
-  <!-- Font loading — using font_picker settings -->
+    {% comment %} Open Graph Tags {% endcomment %}
+  <meta property="og:site_name" content="{{ shop.name }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:locale" content="{{ request.locale.iso_code }}">
+  {% if template.name == 'product' and product %}
+  <meta property="og:title" content="{{ product.title | escape }} | {{ shop.name }}">
+  {% elsif template.name == 'collection' and collection %}
+  <meta property="og:title" content="{{ collection.title | escape }} - Buy Online at {{ shop.name }}">
+  {% else %}
+  <meta property="og:title" content="{{ page_title | escape }}">
+  {% endif %}
+  {% if page_description %}<meta property="og:description" content="{{ page_description | escape | truncate: 155 }}">{% endif %}
+  {% if page_image %}
+  <meta property="og:image" content="{{ page_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="{{ page_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="628">
+  <meta property="og:image:alt" content="{{ page_title | escape }}">
+  <meta name="twitter:image" content="{{ page_image | image_url: width: 1200 }}">
+  <meta name="twitter:image:alt" content="{{ page_title | escape }}">
+  {% elsif settings.social_sharing_image %}
+  <meta property="og:image" content="{{ settings.social_sharing_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="{{ settings.social_sharing_image | image_url: width: 1200 }}">
+  {% endif %}
+  <meta property="og:type" content="{% if template.name == 'product' %}product{% elsif template.name == 'article' %}article{% else %}website{% endif %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% if template.name == 'product' and product %}{{ product.title | escape }}{% else %}{{ page_title | escape }}{% endif %}">
+  {% if page_description %}<meta name="twitter:description" content="{{ page_description | escape | truncate: 155 }}">{% endif %}
+
+  {% if template.name == 'product' and product %}
+  <meta property="product:price:amount" content="{{ product.price | money_without_currency }}">
+  <meta property="product:price:currency" content="{{ shop.currency.iso_code }}">
+  {% endif %}
+
+
   {%- if settings.type_header_font.system? == false -%}
     <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" crossorigin>
   {%- endif -%}
@@ -55,10 +118,8 @@
     <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" crossorigin>
   {%- endif -%}
 
-  <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
 
-  <!-- Generate CSS variables from font_picker (Requirement #15) -->
   {%- liquid
     assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
     assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
@@ -82,7 +143,6 @@
       --font-heading-weight: {{ settings.type_header_font.weight }};
       --font-body-size: {{ settings.type_body_size }}px;
 
-      /* Color system from settings (Requirement #16) */
       --color-header-bg: {{ settings.header_bg_color }};
       --color-accent-primary: {{ settings.color_accent_primary }};
       --color-accent-secondary: {{ settings.color_accent_secondary }};
@@ -90,7 +150,6 @@
       --color-body-bg: {{ settings.color_body_bg }};
       --color-text-primary: {{ settings.color_text_primary }};
 
-      /* Derived from color settings */
       --color-nav-dark: {{ settings.header_bg_color }};
       --color-nav-dark-hover: {{ settings.header_bg_color | color_darken: 5 }};
       --color-accent-orange: {{ settings.color_accent_primary }};
@@ -118,7 +177,7 @@
   {{ 'theme.css' | asset_url | stylesheet_tag }}
 </head>
 
-<body id="body" class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}{% if request.design_mode %} shopify-design-mode{% endif %}">
+<body id="body" class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}{% if request.design_mode %} shopify-design-mode{% endif %} site-wrapper">
 
   <!-- Skip to content (Accessibility requirement #12) -->
   <a class="skip-to-content-link button" href="#MainContent">
@@ -252,7 +311,7 @@
     };
   </script>
 
-  {{ 'theme.js' | asset_url | script_tag }}
+   <script src="{{ 'theme.js' | asset_url }}" defer></script>
 
   <!-- Structured Data / JSON-LD (SEO) -->
   {%- if template.name == 'product' -%}
@@ -305,5 +364,128 @@
     }
     </script>
   {%- endif -%}
+
+  {% if template.name == 'product' %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": "{{ shop.url }}{{ product.url }}",
+    {% if product.featured_image %}"image": ["{{ product.featured_image | image_url: width: 1200 }}"],{% endif %}
+    "description": {{ product.description | strip_html | json }}{% if product.vendor %},
+    "brand": { "@type": "Brand", "name": {{ product.vendor | json }} }{% endif %},
+    {% assign variant = product.selected_or_first_available_variant %}
+    "sku": {{ variant.sku | json | default: product.id | json }},
+    "offers": {
+      "@type": "Offer",
+      "sku": {{ variant.sku | json | default: product.id | json }},
+      "priceCurrency": {{ shop.currency.iso_code | json }},
+      "price": "{{ variant.price | money_without_currency }}",
+      "priceValidUntil": "{{ 'now' | date: '%Y-12-31' }}",
+      "availability": "{% if variant.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+      "url": "{{ shop.url }}{{ product.url }}",
+      "seller": { "@type": "Organization", "name": {{ shop.name | json }} }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "{{ product.metafields.reviews.rating | default: 4.5 }}",
+      "reviewCount": "{{ product.metafields.reviews.rating_count | default: 0 }}"
+    }
+  }
+  </script>
+  {% endif %}
+
+  {% if template.name == 'collection' and collection.products_count > 0 %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "CollectionPage",
+    "name": {{ collection.title | json }},
+    "description": {{ collection.description | strip_html | json }},
+    "url": "{{ shop.url }}{{ collection.url }}",
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": {{ collection.all_products_count }},
+      "itemListElement": [{% for product in collection.products limit: 10 %}{ "@type": "ListItem", "position": {{ forloop.index }}, "url": "{{ shop.url }}{{ product.url }}"}{% unless forloop.last %},{% endunless %}{% endfor %}]
+    }
+  }
+  </script>
+  {% endif %}
+
+  {% if template.name == 'index' %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }},
+    "description": {{ shop.meta_description | json | default: shop.description | json }},
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": { "@type": "EntryPoint", "urlTemplate": "{{ shop.url }}/search?q={search_term_string}" },
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": { "@type": "Organization", "name": {{ shop.name | json }} }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }},
+    "sameAs": [
+      {% if settings.social_facebook != blank %}"{{ settings.social_facebook }}",{% endif %}
+      {% if settings.social_instagram != blank %}"{{ settings.social_instagram }}",{% endif %}
+      {% if settings.social_twitter != blank %}"{{ settings.social_twitter }}",{% endif %}
+      {% if settings.social_youtube != blank %}"{{ settings.social_youtube }}",{% endif %}
+      {% if settings.social_tiktok != blank %}"{{ settings.social_tiktok }}",{% endif %}
+      {% if settings.social_pinterest != blank %}"{{ settings.social_pinterest }}"{% endif %}
+    ]
+  }
+  </script>
+  {% endif %}
+
+  {% if template.name == 'article' and article %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": {{ article.title | json }},
+    "url": "{{ shop.url }}{{ article.url }}",
+    {% if article.image %}"image": "{{ article.image | image_url: width: 1200 }}",{% endif %}
+    "datePublished": "{{ article.created_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+    "dateModified": "{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+    "author": { "@type": "Person", "name": {{ article.author | json }} },
+    "publisher": { "@type": "Organization", "name": {{ shop.name | json }} }
+  }
+  </script>
+  {% endif %}
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ shop.url }}" }
+      {% if template.name == 'product' and product %}
+      ,
+      { "@type": "ListItem", "position": 2, "name": {{ product.vendor | json | default: 'Product' }}, "item": "{{ shop.url }}{{ product.url }}" }
+      {% elsif template.name == 'collection' and collection %}
+      ,
+      { "@type": "ListItem", "position": 2, "name": {{ collection.title | json }}, "item": "{{ shop.url }}{{ collection.url }}" }
+      {% elsif template.name == 'blog' and blog %}
+      ,
+      { "@type": "ListItem", "position": 2, "name": {{ blog.title | json }}, "item": "{{ shop.url }}{{ blog.url }}" }
+      {% elsif template.name == 'article' and article %}
+      ,
+      { "@type": "ListItem", "position": 2, "name": {{ blog.title | json }}, "item": "{{ shop.url }}{{ blog.url }}" },
+      { "@type": "ListItem", "position": 3, "name": {{ article.title | json }}, "item": "{{ shop.url }}{{ article.url }}" }
+      {% endif %}
+    ]
+  }
+  </script>
 </body>
 </html>

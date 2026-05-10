@@ -1,8 +1,6 @@
 <section class="marquee-section" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
   <div class="marquee-track" style="animation-duration:{{ section.settings.speed }}s">
     {% render 'marquee-items' %}
-    <span class="marquee-spacer" aria-hidden="true"></span>
-    {% render 'marquee-items' %}
   </div>
 </section>
 

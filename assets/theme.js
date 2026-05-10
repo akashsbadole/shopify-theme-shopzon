@@ -154,50 +154,54 @@ const CartDrawer = (() => {
     } catch (e) { console.error('Cart refresh failed:', e); }
   }
   function renderDrawer(cart) {
-    const body = $('#cart-drawer-body');
-    const footer = $('#cart-drawer-footer');
+    var body = document.getElementById('cart-drawer-body');
+    var footer = document.getElementById('cart-drawer-footer');
     if (!body) return;
 
     if (cart.item_count === 0) {
-      body.innerHTML = `
-        <div class="cart-drawer__empty">
-          <span class="material-symbols-outlined">shopping_cart</span>
-          <p style="font-weight:600;margin-bottom:8px">Your cart is empty</p>
-          <p style="font-size:13px;color:var(--color-text-secondary)">Add items to get started</p>
-          <a href="/collections/all" class="btn btn-primary mt-4" style="display:inline-flex" onclick="CartDrawer.close()">Shop now</a>
-        </div>`;
+      body.innerHTML = '<div class="cart-drawer__empty">' +
+        '<span class="material-symbols-outlined">shopping_cart</span>' +
+        '<p style="font-weight:600;margin-bottom:8px">Your cart is empty</p>' +
+        '<p style="font-size:13px;color:var(--color-text-secondary)">Add items to get started</p>' +
+        '<a href="/collections/all" class="btn btn-primary mt-4" style="display:inline-flex" onclick="CartDrawer.close()">Shop now</a>' +
+        '</div>';
       if (footer) footer.innerHTML = '';
       return;
     }
 
-    body.innerHTML = cart.items.map(function(item) {
+    var itemsHtml = '';
+    for (var i = 0; i < cart.items.length; i++) {
+      var item = cart.items[i];
       var variantHtml = item.variant_title ? '<div class="cart-item__variant">' + item.variant_title + '</div>' : '';
-      return '<div class="cart-item" data-key="' + item.key + '">' +
+      itemsHtml += '<div class="cart-item" data-key="' + item.key + '">' +
         '<div class="cart-item__image"><a href="' + item.url + '"><img src="' + item.image + '" alt="' + item.product_title + '" loading="lazy"></a></div>' +
         '<div class="cart-item__details">' +
           '<a href="' + item.url + '" class="cart-item__title">' + item.product_title + '</a>' +
           variantHtml +
           '<div class="cart-item__controls">' +
-            '<div class="qty-selector" style="height:28px">' +
-              '<button class="qty-btn" data-action="decrease" data-key="' + item.key + '" style="width:28px;height:28px">-</button>' +
-              '<input class="qty-input" type="number" value="' + item.quantity + '" min="0" style="width:40px;height:28px;font-size:13px" onchange="CartDrawer.updateQty(\'' + item.key + '\', this.value)">' +
-              '<button class="qty-btn" data-action="increase" data-key="' + item.key + '" style="width:28px;height:28px">+</button>' +
+            '<div class="qty-selector" style="height:28px;display:flex;align-items:center;border:1px solid var(--color-border);border-radius:4px;overflow:hidden;">' +
+              '<button class="qty-btn" data-action="decrease" data-key="' + item.key + '" style="width:28px;height:28px;background:none;border:none;cursor:pointer;font-size:16px">-</button>' +
+              '<input class="qty-input" type="number" value="' + item.quantity + '" min="0" style="width:40px;height:28px;font-size:13px;text-align:center;border:none;border-left:1px solid var(--color-border);border-right:1px solid var(--color-border);padding:0">' +
+              '<button class="qty-btn" data-action="increase" data-key="' + item.key + '" style="width:28px;height:28px;background:none;border:none;cursor:pointer;font-size:16px">+</button>' +
             '</div>' +
-            '<span class="cart-item-action-link" onclick="CartDrawer.updateQty(\'' + item.key + '\', 0)">Remove</span>' +
+            '<span class="cart-item-action-link" style="cursor:pointer;text-decoration:underline;color:var(--color-link);font-size:12px;margin-left:8px">Remove</span>' +
           '</div>' +
         '</div>' +
         '<div class="cart-item__price">' + formatMoney(item.final_line_price) + '</div>' +
       '</div>';
-    }).join('');
+    }
+    body.innerHTML = itemsHtml;
 
-    if (footer) footer.innerHTML = `
-      <div class="cart-drawer__subtotal">
-        <span>Subtotal (${cart.item_count} item${cart.item_count !== 1 ? 's' : ''})</span>
-        <span>${formatMoney(cart.total_price)}</span>
-      </div>
-      <a href="/checkout" class="btn btn-primary btn-full" style="margin-bottom:8px">Proceed to Checkout</a>
-      <a href="/cart" class="btn btn-ghost btn-full">View Cart</a>
-      <p class="cart-notice">Taxes and shipping calculated at checkout</p>`;
+    if (footer) {
+      var plural = cart.item_count !== 1 ? 's' : '';
+      footer.innerHTML = '<div class="cart-drawer__subtotal">' +
+        '<span>Subtotal (' + cart.item_count + ' item' + plural + ')</span>' +
+        '<span>' + formatMoney(cart.total_price) + '</span>' +
+        '</div>' +
+        '<a href="/checkout" class="btn btn-primary btn-full" style="margin-bottom:8px;display:flex;align-items:center;justify-content:center">Proceed to Checkout</a>' +
+        '<a href="/cart" class="btn btn-ghost btn-full" style="display:flex;align-items:center;justify-content:center">View Cart</a>' +
+        '<p class="cart-notice">Taxes and shipping calculated at checkout</p>';
+    }
   }
   function updateCartCount(count) {
     $$('.cart-count').forEach(el => { el.textContent = count; el.style.display = count > 0 ? 'flex' : 'none'; });
@@ -325,12 +329,30 @@ function initQtySelectors() {
   document.addEventListener('click', function(e) {
     var btn = e.target.closest('.qty-btn');
     if (!btn) return;
-    var input = btn.closest('.qty-selector').querySelector('.qty-input');
+
+    var selector = btn.closest('.qty-selector');
+    if (!selector) return;
+    var input = selector.querySelector('.qty-input');
     if (!input) return;
+
     var val = parseInt(input.value) || 1;
-    if (btn.dataset.action === 'decrease') val = Math.max(1, val - 1);
+    if (btn.dataset.action === 'decrease') val = Math.max(0, val - 1);
     else val++;
     input.value = val;
+
+    // Cart drawer quantity update
+    if (btn.dataset.key) {
+      var key = btn.dataset.key;
+      if (val <= 0) {
+        if (window.CartDrawer && window.CartDrawer.updateQty) {
+          window.CartDrawer.updateQty(key, 0);
+        }
+      } else {
+        if (window.CartDrawer && window.CartDrawer.updateQty) {
+          window.CartDrawer.updateQty(key, val);
+        }
+      }
+    }
   });
 }
 
@@ -1105,15 +1127,6 @@ function switchGenericTab(tabId, panel, btn) {
   btn.classList.add('active');
 }
 
-// ============================================
-// MARQUEE — pause on hover (already via CSS, ensure JS init)
-// ============================================
-function initMarquee() {
-  document.querySelectorAll('.marquee-track').forEach(track => {
-    const clone = track.cloneNode(true);
-    track.parentElement.appendChild(clone);
-  });
-}
 
 // ============================================
 // ENHANCED INIT
@@ -1133,7 +1146,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initSocialProof();
   initBackToTopFAB();
   initVideoSections();
-  initMarquee();
   Compare.renderBar();
 
   // Add back-to-top fab if not present

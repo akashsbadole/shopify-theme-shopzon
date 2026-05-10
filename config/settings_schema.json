@@ -24,8 +24,8 @@
   {
     "name": "Typography",
     "settings": [
-      { "type": "font_picker", "id": "type_header_font", "label": "Heading font", "default": "inter_n7" },
-      { "type": "font_picker", "id": "type_body_font", "label": "Body font", "default": "inter_n4" },
+      { "type": "font_picker", "id": "type_header_font", "label": "Heading font", "default": "poppins_n7" },
+      { "type": "font_picker", "id": "type_body_font", "label": "Body font", "default": "poppins_n4" },
       {
         "type": "range",
         "id": "type_body_size",
@@ -207,6 +207,18 @@
         "label": "Enable card hover effects",
         "default": true
       }
+    ]
+  },
+{
+    "name": "SEO",
+    "settings": [
+      { "type": "text", "id": "seo_google_verify", "label": "Google Site Verification", "info": "Paste your Google verification meta tag content" },
+      { "type": "text", "id": "seo_bing_verify", "label": "Bing Webmaster Verification", "info": "Paste your Bing verification meta tag content" },
+      { "type": "checkbox", "id": "seo_noindex_collections", "label": "Noindex non-main collection pages", "default": false, "info": "Prevents search engines from indexing filtered/sorted collection pages" },
+      { "type": "checkbox", "id": "seo_noindex_search", "label": "Noindex search result pages", "default": true, "info": "Prevents search engines from indexing search result pages" },
+      { "type": "checkbox", "id": "seo_noindex_blog", "label": "Noindex blog listing page", "default": false },
+      { "type": "text", "id": "seo_default_description", "label": "Default meta description", "info": "Fallback description when page has no description" },
+      { "type": "text", "id": "seo_default_keywords", "label": "Default meta keywords", "info": "Comma-separated keywords for homepage" }
     ]
   },
   {
