@@ -209,6 +209,9 @@
             <!-- Accelerated Checkout Buttons (Requirement #4) -->
             {% render 'accelerated-checkout', product: product, variant: current_variant %}
 
+            <button type="button" id="buy-now-btn" class="btn btn-secondary btn-lg btn-full" data-variant-id="{{ current_variant.id }}" data-quantity="1">
+              {{ 'products.general.buy_now' | t | default: 'Buy Now' }}
+            </button>
           {%- else -%}
             <button type="submit" id="add-to-cart-btn" name="add" class="btn btn-ghost btn-lg btn-full" disabled aria-disabled="true" aria-label="{{ 'products.general.sold_out' | t | default: 'Sold Out' }}">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">remove_shopping_cart</span>
@@ -266,14 +269,16 @@
         </div>
       </div>
 
-      <!-- Payment icons -->
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-divider)" aria-label="{{ 'products.general.accepted_payments' | t | default: 'Accepted payment methods' }}">
-        <span style="font-size:11px;color:var(--color-text-muted)">{{ 'products.general.accepted_payments' | t | default: 'We accept:' }}</span>
-        {%- for type in shop.enabled_payment_types -%}
-          {{ type | payment_type_svg_tag: style: 'height:20px;border-radius:3px;', title: type }}
-        {%- endfor -%}
-      </div>
-    </div>
+       <!-- Payment icons -->
+       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-divider)" aria-label="{{ 'products.general.accepted_payments' | t | default: 'Accepted payment methods' }}">
+         <span style="font-size:11px;color:var(--color-text-muted)">{{ 'products.general.accepted_payments' | t | default: 'We accept:' }}</span>
+         {%- for type in shop.enabled_payment_types -%}
+           {{ type | payment_type_svg_tag: style: 'height:20px;border-radius:3px;', title: type }}
+         {%- endfor -%}
+       </div>
+
+       {% section 'trust-badges' %}
+     </div>
   </div>
 
   <!-- Product Description Accordion -->
@@ -335,8 +340,9 @@
               <div id="bis-success-product" style="display:none;color:var(--color-success);font-size:13px;margin-top:var(--space-2);display:flex;align-items:center;gap:6px">
                 <span class="material-symbols-outlined" style="font-size:16px">check_circle</span>You're on the list! We'll email you when it's back.
               </div>
-            </div>
           </div>
+          {% render 'social-sharing', product: product %}
+        </div>
         {% endif %}
         {% if product.metafields.custom.buy_it_now_message != blank %}
           <div style="padding:var(--space-2) 0">{{ product.metafields.custom.buy_it_now_message }}</div>

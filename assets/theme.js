@@ -417,7 +417,11 @@ function initCollectionFilters() {
 // ============================================
 function initBackToTop() {
   const btn = $('#back-to-top');
+  if (!btn) return;
   on(btn, 'click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  const toggle = () => { btn.classList.toggle('visible', window.scrollY > 300); };
+  window.addEventListener('scroll', toggle, { passive: true });
+  toggle();
 }
 
 // ============================================
@@ -496,6 +500,23 @@ document.addEventListener('click', e => {
   if (e.target.matches('[data-wishlist-btn]') || e.target.closest('[data-wishlist-btn]')) {
     const btn = e.target.closest('[data-wishlist-btn]');
     if (btn) Wishlist.toggle(btn.dataset.wishlistBtn);
+  }
+  // Quick Buy
+  if (e.target.matches('#buy-now-btn') || e.target.closest('#buy-now-btn')) {
+    e.preventDefault();
+    const variantInput = document.getElementById('variant-id-input');
+    const qtyInput = document.getElementById('product-qty-input');
+    const variantId = variantInput ? variantInput.value : null;
+    const qty = qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
+    if (!variantId) { Toast.show('Please select a variant', 'error'); return; }
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: qty })
+    })
+    .then(res => res.json())
+    .then(() => { window.location.href = '/checkout'; })
+    .catch(err => { console.error('Quick buy error:', err); Toast.show('Failed to add to cart', 'error'); });
   }
   // Close cart
   if (e.target.matches('#cart-drawer-close') || e.target.closest('#cart-drawer-close')) {
@@ -898,6 +919,7 @@ function initImageZoom() {
 function initCountdownTimers() {
   document.querySelectorAll('[data-countdown]').forEach(el => {
     const end = new Date(el.dataset.countdown).getTime();
+    const labelText = el.dataset.label || 'Ends in:';
     function tick() {
       const now = Date.now();
       const diff = end - now;
@@ -908,10 +930,10 @@ function initCountdownTimers() {
       const s = Math.floor((diff % 60000) / 1000);
       var daysPart = '';
       if (d > 0) { daysPart = '<span class="countdown-unit">' + d + 'd</span><span class="countdown-sep">:</span>'; }
-      var hStr = String(h); while (hStr.length < 2) { hStr = '0' + hStr; }
-      var mStr = String(m); while (mStr.length < 2) { mStr = '0' + mStr; }
-      var sStr = String(s); while (sStr.length < 2) { sStr = '0' + sStr; }
-      el.innerHTML = '<span class="material-symbols-outlined">timer</span><span>Ends in:</span><span class="countdown-units">' + daysPart + '<span class="countdown-unit">' + hStr + '</span><span class="countdown-sep">:</span><span class="countdown-unit">' + mStr + '</span><span class="countdown-sep">:</span><span class="countdown-unit">' + sStr + '</span></span>';
+      var hStr = String(h).padStart(2, '0');
+      var mStr = String(m).padStart(2, '0');
+      var sStr = String(s).padStart(2, '0');
+      el.innerHTML = '<span class="material-symbols-outlined">timer</span><span>' + labelText + '</span><span class="countdown-units">' + daysPart + '<span class="countdown-unit">' + hStr + '</span><span class="countdown-sep">:</span><span class="countdown-unit">' + mStr + '</span><span class="countdown-sep">:</span><span class="countdown-unit">' + sStr + '</span></span>';
     }
     tick();
     setInterval(tick, 1000);
@@ -983,6 +1005,15 @@ function initNewsletterPopup() {
     localStorage.setItem('newsletter_subscribed', '1');
     setTimeout(() => popup.classList.remove('visible'), 1500);
   });
+
+  // Exit-intent trigger
+  if (popup.dataset.trigger === 'exit-intent') {
+    document.addEventListener('mouseout', function(e) {
+      if (e.clientY < 0 && !popup.classList.contains('visible') && !localStorage.getItem('newsletter_dismissed') && !localStorage.getItem('newsletter_subscribed')) {
+        popup.classList.add('visible');
+      }
+    });
+  }
 }
 
 // ============================================

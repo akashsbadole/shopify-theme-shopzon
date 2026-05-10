@@ -171,11 +171,44 @@
 
 <style>
   .nav-mega-wrap:hover .nav-mega-dropdown { display: block !important; }
+
+  /* Mobile Header — 768px and below */
   @media (max-width: 768px) {
-    .header-mobile-toggle { display: flex !important; }
+    .header-main { padding: 10px var(--page-gutter-mobile); gap: 8px; min-height: 58px; }
+    .header-mobile-toggle { display: flex !important; width: 42px; height: 42px; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; flex-shrink: 0; }
+    .header-mobile-toggle .material-symbols-outlined { font-size: 22px; }
+    .header-logo { margin: 0 auto; }
+    .header-logo img { height: 32px !important; width: auto !important; }
+    .header-logo-text { font-size: 18px !important; }
+    .header-location { display: none !important; }
     .header-search { display: none !important; }
-    #mobile-search-trigger { display: flex !important; }
+    .header-actions { gap: 0; }
+    .header-action-btn { min-width: 42px; padding: 4px 6px; }
+    .header-action-btn .material-symbols-outlined { font-size: 22px; }
+    .action-label, .action-main { display: none !important; }
+    .cart-count-badge { top: 0; right: 0; min-width: 16px; height: 16px; font-size: 10px; }
+    #mobile-search-trigger { display: flex !important; width: 42px; height: 42px; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; }
+
+    /* Bottom nav — hide on mobile */
+    .header-nav { display: none; }
+
+    /* Mobile menu drawer */
+    .mobile-menu-drawer { width: 280px; }
+    .mobile-menu-header { padding: var(--space-4); }
+    .mobile-menu-title { font-size: 16px; }
+    .mobile-menu-item { padding: 14px var(--space-4); font-size: 15px; }
+    .mobile-submenu-item { padding: 10px var(--space-5) 10px var(--space-8); font-size: 14px; }
   }
+
+  /* Extra small — 480px and below */
+  @media (max-width: 480px) {
+    .header-main { padding: 8px var(--page-gutter-mobile); }
+    .header-logo-text { font-size: 16px !important; }
+    .header-mobile-toggle, #mobile-search-trigger { width: 38px; height: 38px; }
+  }
+
+  /* Hamburger animation */
+  .header-mobile-toggle[aria-expanded="true"] { background: rgba(255,255,255,0.1); }
 </style>
 
 {% schema %}

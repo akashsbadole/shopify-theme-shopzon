@@ -73,10 +73,14 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="dns-prefetch" href="https://www.google.com">
-  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+   <link rel="dns-prefetch" href="https://www.google.com">
+   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
-    {% comment %} Open Graph Tags {% endcomment %}
+   {%- if settings.custom_code_head != blank -%}
+     {{ settings.custom_code_head }}
+   {%- endif -%}
+
+   {% comment %} Open Graph Tags {% endcomment %}
   <meta property="og:site_name" content="{{ shop.name }}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:locale" content="{{ request.locale.iso_code }}">
@@ -178,6 +182,10 @@
 </head>
 
 <body id="body" class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}{% if request.design_mode %} shopify-design-mode{% endif %} site-wrapper">
+
+  {%- if settings.custom_code_body_start != blank -%}
+    {{ settings.custom_code_body_start }}
+  {%- endif -%}
 
   <!-- Skip to content (Accessibility requirement #12) -->
   <a class="skip-to-content-link button" href="#MainContent">
@@ -486,6 +494,11 @@
       {% endif %}
     ]
   }
-  </script>
-</body>
+   </script>
+
+   {%- if settings.custom_code_body_end != blank -%}
+     {{ settings.custom_code_body_end }}
+   {%- endif -%}
+
+ </body>
 </html>

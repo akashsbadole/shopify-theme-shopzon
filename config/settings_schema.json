@@ -227,5 +227,40 @@
       { "type": "image_picker", "id": "store_checkout_logo", "label": "Checkout logo", "info": "Recommended size: 180x50px" },
       { "type": "color", "id": "checkout_accent", "label": "Checkout accent color", "default": "#FF9900" }
     ]
+  },
+  {
+    "name": "Custom Code / Scripts",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Head Scripts (before </head>)"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_code_head",
+        "label": "Custom head scripts",
+        "info": "Paste any scripts that belong in the document head (e.g., Google Tag Manager container snippet, meta tags). Use with caution."
+      },
+      {
+        "type": "header",
+        "content": "Body Start (after <body>)"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_code_body_start",
+        "label": "Custom body start scripts",
+        "info": "Scripts placed here load immediately after <body> opens. Suitable for early analytics initialization."
+      },
+      {
+        "type": "header",
+        "content": "Body End (before </body>)"
+      },
+      {
+        "type": "textarea",
+        "id": "custom_code_body_end",
+        "label": "Custom body end scripts",
+        "info": "Ideal for most tracking pixels (Facebook, Hotjar, TikTok) and non-critical JS. Loads last for optimal performance."
+      }
+    ]
   }
 ]

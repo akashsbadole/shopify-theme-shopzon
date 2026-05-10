@@ -1,0 +1,35 @@
+{%- comment %} Social sharing buttons for products/pages. Usage: {% render 'social-sharing', product: product %} {% endcomment -%}
+
+{%- if product != nil -%}
+  {%- assign share_title = product.title -%}
+  {%- assign share_url = shop.url | append: product.url -%}
+  {%- assign share_image = product.featured_image | image_url: width: 1200 -%}
+{%- elsif page != nil -%}
+  {%- assign share_title = page.title | default: shop.name -%}
+  {%- assign share_url = shop.url | append: page.url -%}
+  {%- assign share_image = page.image | default: settings.social_sharing_image | image_url: width: 1200 -%}
+{%- else -%}
+  {%- assign share_title = shop.name -%}
+  {%- assign share_url = shop.url -%}
+  {%- assign share_image = settings.social_sharing_image | image_url: width: 1200 -%}
+{%- endif -%}
+
+<div class="social-sharing">
+  <span class="social-sharing__label">{{ 'general.social.share' | t | default: 'Share:' }}</span>
+  <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url | url_encode }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="social-sharing__link">
+    <span class="material-symbols-outlined">facebook</span>
+    <span>Facebook</span>
+  </a>
+  <a href="https://twitter.com/intent/tweet?url={{ share_url | url_encode }}&text={{ share_title | url_encode }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter" class="social-sharing__link">
+    <span class="material-symbols-outlined">alternate_email</span>
+    <span>Twitter</span>
+  </a>
+  <a href="https://pinterest.com/pin/create/button/?url={{ share_url | url_encode }}&media={{ share_image | url_encode }}&description={{ share_title | url_encode }}" target="_blank" rel="noopener noreferrer" aria-label="Pinterest" class="social-sharing__link">
+    <span class="material-symbols-outlined">push_pin</span>
+    <span>Pinterest</span>
+  </a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ share_url | url_encode }}&title={{ share_title | url_encode }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-sharing__link">
+    <span class="material-symbols-outlined">business</span>
+    <span>LinkedIn</span>
+  </a>
+</div>

@@ -1,0 +1,60 @@
+<section class="countdown-timer-section" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}" data-reveal>
+  <div class="page-container">
+    <div class="deal-countdown" data-countdown="{{ section.settings.end_date | date: '%Y-%m-%dT%H:%M:%SZ' }}" data-label="{{ section.settings.timer_label | escape }}">
+      <span class="material-symbols-outlined">timer</span>
+      <span>{{ section.settings.timer_label | default: 'Ends in:' }}</span>
+      <span class="countdown-units">
+        <span class="countdown-unit" data-days>00</span>:
+        <span class="countdown-unit" data-hours>00</span>:
+        <span class="countdown-unit" data-minutes>00</span>:
+        <span class="countdown-unit" data-seconds>00</span>
+      </span>
+    </div>
+    {%- if section.settings.description != blank -%}
+      <p style="font-size:13px;color:var(--color-text-secondary);margin-top:var(--space-2);text-align:center">{{ section.settings.description }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Countdown Timer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End date & time (YYYY-MM-DDTHH:MM:SS)",
+      "info": "Use format: 2024-12-31T23:59:59 (UTC)"
+    },
+    {
+      "type": "text",
+      "id": "timer_label",
+      "label": "Timer label",
+      "default": "Ends in:"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#232F3E"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description (optional)",
+      "info": "Small text below the timer, e.g., offer details."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Countdown Timer"
+    }
+  ]
+}
+{% endschema %}

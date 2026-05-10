@@ -1,0 +1,56 @@
+{% comment %} Article Template — Blog Posting SEO {% endcomment %}
+
+<div class="page-container" style="padding-top:var(--space-3);padding-bottom:var(--space-8)">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="{{ 'general.breadcrumbs.aria_label' | t | default: 'Breadcrumb' }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    <a href="{{ article.url }}">{{ article.title }}</a>
+  </nav>
+
+  <article class="article" itemscope itemtype="https://schema.org/BlogPosting">
+    <header class="article-header" style="margin-bottom:var(--space-4)">
+      <h1 style="font-size:var(--font-size-2xl);font-weight:700">{{ article.title }}</h1>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-top:8px">
+        By {{ article.author }} &bull; {{ article.published_at | date: '%B %d, %Y' }}
+        {% if article.updated_at != article.published_at %}
+          &bull; Updated {{ article.updated_at | date: '%B %d, %Y' }}
+        {% endif %}
+      </div>
+    </header>
+
+    {% if article.image %}
+      <div class="article-image" style="margin-bottom:var(--space-4)">
+        {{ article.image | image_url: width: 1200 | image_tag: alt: article.title, loading: 'lazy', style: 'width:100%;height:auto;display:block;border-radius:var(--border-radius)' }}
+      </div>
+    {% endif %}
+
+    <div class="article-content rte" style="line-height:1.7;font-size:var(--font-size-body);color:var(--color-text-primary)">
+      {{ article.content }}
+    </div>
+
+    {% if article.tags.size > 0 %}
+      <div class="article-tags" style="margin-top:var(--space-4);font-size:13px;color:var(--color-text-secondary)">
+        Tags:
+        {% for tag in article.tags %}
+          <a href="{{ blog.url }}/tagged/{{ tag | handle }}" style="color:var(--color-link)">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </article>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ article.title | json }},
+  "url": {{ shop.url | append: article.url | json }},
+  "image": {{ article.image | image_url: width: 1200 | json }},
+  "datePublished": "{{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+  "dateModified": "{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+  "author": { "@type": "Person", "name": {{ article.author | json }} },
+  "publisher": { "@type": "Organization", "name": {{ shop.name | json }} }
+}
+</script>

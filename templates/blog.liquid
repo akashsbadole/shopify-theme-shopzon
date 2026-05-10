@@ -1,0 +1,88 @@
+{% comment %} Blog Listing Template — OS 2.0 compliant {% endcomment %}
+
+{%- paginate blog.articles by 10 -%}
+
+<div class="page-container" style="padding-top:var(--space-3);padding-bottom:var(--space-8)">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="{{ 'general.breadcrumbs.aria_label' | t | default: 'Breadcrumb' }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    {%- if current_tags -%}
+      <a href="{{ blog.url }}">{{ blog.title }}</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <span aria-current="page">{{ current_tags | join: ', ' }}</span>
+    {%- else -%}
+      <span aria-current="page">{{ blog.title }}</span>
+    {%- endif -%}
+  </nav>
+
+  <!-- Blog Header -->
+  <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-3)">
+    <h1 style="font-size:var(--font-size-xl);font-weight:700;margin-bottom:4px">{{ blog.title }}</h1>
+    {%- if blog.description != blank -%}
+      <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);max-width:640px;line-height:1.6">{{ blog.description }}</div>
+    {%- endif -%}
+  </div>
+
+  <!-- Articles Grid -->
+  <div class="articles-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--space-4)">
+    {% for article in blog.articles %}
+      <article class="article-card" style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden">
+        {% if article.image %}
+          <a href="{{ article.url }}" class="article-card__image" style="display:block">
+            {{ article.image | image_url: width: 600 | image_tag: alt: article.title, loading: 'lazy', style: 'width:100%;height:auto;display:block' }}
+          </a>
+        {% endif %}
+        <div style="padding:var(--space-4)">
+          <h2 style="font-size:var(--font-size-lg);font-weight:700;margin-bottom:var(--space-2)">
+            <a href="{{ article.url }}" style="color:inherit;text-decoration:none">{{ article.title }}</a>
+          </h2>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:var(--space-2)">
+            By {{ article.author }} &bull; {{ article.published_at | date: '%B %d, %Y' }}
+          </div>
+          <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);line-height:1.6">
+            {{ article.excerpt | strip_html | truncate: 120 }}
+          </div>
+          <a href="{{ article.url }}" class="btn btn-ghost btn-sm" style="margin-top:var(--space-3)">Read More</a>
+        </div>
+      </article>
+    {% else %}
+      <p>No articles found.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if paginate.pages > 1 %}
+    <div style="margin-top:var(--space-6);display:flex;justify-content:center">
+      {% render 'pagination', paginate: paginate %}
+    </div>
+  {% endif %}
+
+</div>
+
+{%- endpaginate -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": {{ blog.title | json }},
+  "url": {{ shop.url | append: blog.url | json }},
+  "description": {{ blog.description | strip_html | json | default: "" }},
+  "mainEntity": [
+    {% for article in blog.articles %}
+    {
+      "@type": "BlogPosting",
+      "headline": {{ article.title | json }},
+      "url": {{ shop.url | append: article.url | json }},
+      "image": {{ article.image | image_url: width: 1200 | json }},
+      "datePublished": "{{ article.published_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+      "dateModified": "{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%SZ' }}",
+      "author": { "@type": "Person", "name": {{ article.author | json }} },
+      "publisher": { "@type": "Organization", "name": {{ shop.name | json }} }
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
+</script>

@@ -1,6 +1,6 @@
 <section style="background:var(--color-surface-white);border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);padding:var(--space-5) 0" data-reveal>
   <div class="page-container">
-    <div style="display:grid;grid-template-columns:repeat({{ section.blocks.size | default: 4 }},1fr);gap:var(--space-4)">
+    <div class="trust-badges-inner" style="display:grid;grid-template-columns:repeat({{ section.blocks.size | default: 4 }},1fr);gap:var(--space-4)">
       {% for block in section.blocks %}
         {% if block.type == 'trust_item' %}
           <div style="display:flex;align-items:center;gap:12px" {{ block.shopify_attributes }}>

@@ -1,5 +1,5 @@
 {% if section.settings.enabled %}
-<div id="newsletter-popup" class="newsletter-popup-overlay" data-delay="{{ section.settings.delay | times: 1000 }}" aria-label="Newsletter signup" role="dialog">
+<div id="newsletter-popup" class="newsletter-popup-overlay" data-delay="{{ section.settings.delay | times: 1000 }}" data-trigger="exit-intent" aria-label="Newsletter signup" role="dialog">
   <div class="newsletter-popup" onclick="event.stopPropagation()">
 
     <!-- Close -->
