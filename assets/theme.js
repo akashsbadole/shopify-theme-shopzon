@@ -886,17 +886,12 @@ function initCountdownTimers() {
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
-      el.innerHTML = `
-        <span class="material-symbols-outlined">timer</span>
-        <span>Ends in:</span>
-        <span class="countdown-units">
-          ${d > 0 ? `<span class="countdown-unit">${d}d</span><span class="countdown-sep">:</span>` : ''}
-          <span class="countdown-unit">${String(h).padStart(2,'0')}</span>
-          <span class="countdown-sep">:</span>
-          <span class="countdown-unit">${String(m).padStart(2,'0')}</span>
-          <span class="countdown-sep">:</span>
-          <span class="countdown-unit">${String(s).padStart(2,'0')}</span>
-        </span>`;
+      var daysPart = '';
+      if (d > 0) { daysPart = '<span class="countdown-unit">' + d + 'd</span><span class="countdown-sep">:</span>'; }
+      var hStr = String(h); while (hStr.length < 2) { hStr = '0' + hStr; }
+      var mStr = String(m); while (mStr.length < 2) { mStr = '0' + mStr; }
+      var sStr = String(s); while (sStr.length < 2) { sStr = '0' + sStr; }
+      el.innerHTML = '<span class="material-symbols-outlined">timer</span><span>Ends in:</span><span class="countdown-units">' + daysPart + '<span class="countdown-unit">' + hStr + '</span><span class="countdown-sep">:</span><span class="countdown-unit">' + mStr + '</span><span class="countdown-sep">:</span><span class="countdown-unit">' + sStr + '</span></span>';
     }
     tick();
     setInterval(tick, 1000);

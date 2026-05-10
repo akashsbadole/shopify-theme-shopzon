@@ -314,7 +314,7 @@ details.mobile-menu-item-with-children > summary::-webkit-details-marker { displ
   position: relative;
 }
 .product-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.15); border-color: #ccc; }
-.product-card__image-wrap { position: relative; aspect-ratio: 1; overflow: hidden; background: #fff; }
+.product-card__image-wrap { position: relative;overflow: hidden; background: #fff; }
 .product-card__image { width: 100%; height: 100%; object-fit: contain; padding: var(--space-2); }
 .product-card__image-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--color-border); }
 .product-card__image-placeholder .material-symbols-outlined { font-size: 48px; }

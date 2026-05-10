@@ -103,7 +103,7 @@
       <!-- Products Grid -->
       <div
         id="ProductGrid"
-        class="products-grid products-grid--{{ section.settings.columns_desktop }}"
+        class="products-grid products-grid--3"
         aria-live="polite"
         aria-label="{{ 'collections.general.collection_products_label' | t: title: collection.title | default: collection.title }}"
       >
@@ -149,7 +149,7 @@
   // Grid/list view toggle
   function setGridView(isGrid, btn) {
     const grid = document.getElementById('ProductGrid');
-    const cols = {{ section.settings.columns_desktop }};
+    const cols = 2;
     grid.className = 'products-grid products-grid--' + (isGrid ? cols : 1);
     if (!isGrid) {
       grid.querySelectorAll('.product-card').forEach(card => {
