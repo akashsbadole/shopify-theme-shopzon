@@ -47,12 +47,14 @@
       {%- if product.images.size > 1 -%}
         <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.general.thumbnail_images' | t | default: 'Product thumbnails' }}">
           {%- for image in product.images -%}
+            {%- assign img_index = forloop.index0 -%}
             <button
               class="product-gallery__thumb {% if forloop.first %}active{% endif %}"
               role="listitem"
               aria-label="{{ 'products.general.load_image' | t: index: forloop.index | default: 'View image ' | append: forloop.index }}"
               aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
               onclick="switchGalleryImage('{{ image | image_url: width: 900 }}', this)"
+              data-img-index="{{ img_index }}"
               style="background:none;border:none;padding:0;cursor:pointer"
             >
               {% render 'responsive-image',
@@ -176,7 +178,7 @@
         <div class="product-qty">
           <span class="qty-label" id="quantity-label">{{ 'products.general.quantity' | t | default: 'Qty' }}:</span>
           <div class="qty-selector" aria-labelledby="quantity-label">
-            <button type="button" class="qty-btn" aria-label="{{ 'products.general.decrease_quantity' | t | default: 'Decrease quantity' }}" onclick="changeQty(-1)">−</button>
+            <button type="button" class="qty-btn" data-action="decrease" aria-label="{{ 'products.general.decrease_quantity' | t | default: 'Decrease quantity' }}">−</button>
             <input
               type="number"
               name="quantity"
@@ -186,7 +188,7 @@
               aria-label="{{ 'products.general.quantity' | t | default: 'Quantity' }}"
               class="qty-input"
             >
-            <button type="button" class="qty-btn" aria-label="{{ 'products.general.increase_quantity' | t | default: 'Increase quantity' }}" onclick="changeQty(1)">+</button>
+            <button type="button" class="qty-btn" data-action="increase" aria-label="{{ 'products.general.increase_quantity' | t | default: 'Increase quantity' }}">+</button>
           </div>
         </div>
 
@@ -270,61 +272,69 @@
     </div>
   </div>
 
-  <!-- Product Description Tabs -->
-  <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);margin-top:var(--space-5);overflow:hidden" role="tablist" aria-label="{{ 'products.tabs.label' | t | default: 'Product information' }}">
-    <div class="tab-nav">
-      <button class="tab-nav-item active" role="tab" aria-selected="true" aria-controls="tab-desc" id="tab-btn-desc" onclick="switchGenericTab('desc','tab-desc',this)">
-        {{ 'products.tabs.description' | t | default: 'Description' }}
-      </button>
-      <button class="tab-nav-item" role="tab" aria-selected="false" aria-controls="tab-specs" id="tab-btn-specs" onclick="switchGenericTab('specs','tab-specs',this)">
-        {{ 'products.tabs.specifications' | t | default: 'Specifications' }}
-      </button>
-      <button class="tab-nav-item" role="tab" aria-selected="false" aria-controls="tab-ship" id="tab-btn-ship" onclick="switchGenericTab('ship','tab-ship',this)">
-        {{ 'products.tabs.shipping' | t | default: 'Shipping & Returns' }}
-      </button>
-    </div>
+  <!-- Product Description Accordion -->
+  <div class="product-accordion" role="list" aria-label="{{ 'products.tabs.label' | t | default: 'Product information' }}">
+    <details class="accordion-item" id="acc-desc">
+      <summary class="accordion-summary" aria-expanded="false">
+        <span>{{ 'products.tabs.description' | t | default: 'Description' }}</span>
+        <span class="material-symbols-outlined accordion-icon">add</span>
+      </summary>
+      <div class="accordion-body">
+        {%- if product.description != blank -%}
+          <div class="product-description">{{ product.description }}</div>
+        {%- else -%}
+          <p style="color:var(--color-text-secondary)">{{ 'products.tabs.no_description' | t | default: 'No description available.' }}</p>
+        {%- endif -%}
+      </div>
+    </details>
 
-    <div id="tab-desc" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-desc" style="padding:var(--space-5)">
-      {%- if product.description != blank -%}
-        <div class="product-description">{{ product.description }}</div>
-      {%- else -%}
-        <p style="color:var(--color-text-secondary)">{{ 'products.tabs.no_description' | t | default: 'No description available.' }}</p>
-      {%- endif -%}
-    </div>
-    <div id="tab-specs" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-specs" style="padding:var(--space-5)">
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        {%- if product.vendor != blank -%}
-          <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;width:180px;background:var(--color-surface);text-align:left">{{ 'products.specs.brand' | t | default: 'Brand' }}</th><td style="padding:10px">{{ product.vendor }}</td></tr>
-        {%- endif -%}
-        {%- if product.type != blank -%}
-          <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.type' | t | default: 'Type' }}</th><td style="padding:10px">{{ product.type }}</td></tr>
-        {%- endif -%}
-        <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.sku' | t | default: 'SKU' }}</th><td style="padding:10px">{{ current_variant.sku | default: 'N/A' }}</td></tr>
-        {%- if current_variant.weight > 0 -%}
-          <tr><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.weight' | t | default: 'Weight' }}</th><td style="padding:10px">{{ current_variant.weight }} {{ current_variant.weight_unit }}</td></tr>
-        {%- endif -%}
-      </table>
-    </div>
-    <div id="tab-ship" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-ship" style="padding:var(--space-5)">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)">
-        <div>
-          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">{{ 'products.tabs.shipping_title' | t | default: 'Shipping' }}</h3>
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px">
-            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.free_standard' | t | default: 'Free standard shipping on orders over $50' }}</li>
-            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.express' | t | default: 'Express delivery available at checkout' }}</li>
-            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.international' | t | default: 'International shipping to select countries' }}</li>
-          </ul>
-        </div>
-        <div>
-          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">{{ 'products.tabs.returns_title' | t | default: 'Returns' }}</h3>
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px">
-            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.days' | t | default: '30-day hassle-free returns' }}</li>
-            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.free_defective' | t | default: 'Free return shipping on defective items' }}</li>
-            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.refund_time' | t | default: 'Full refund within 7 business days' }}</li>
-          </ul>
+    <details class="accordion-item" id="acc-specs">
+      <summary class="accordion-summary" aria-expanded="false">
+        <span>{{ 'products.tabs.specifications' | t | default: 'Specifications' }}</span>
+        <span class="material-symbols-outlined accordion-icon">add</span>
+      </summary>
+      <div class="accordion-body">
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          {%- if product.vendor != blank -%}
+            <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;width:180px;background:var(--color-surface);text-align:left">{{ 'products.specs.brand' | t | default: 'Brand' }}</th><td style="padding:10px">{{ product.vendor }}</td></tr>
+          {%- endif -%}
+          {%- if product.type != blank -%}
+            <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.type' | t | default: 'Type' }}</th><td style="padding:10px">{{ product.type }}</td></tr>
+          {%- endif -%}
+          <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.sku' | t | default: 'SKU' }}</th><td style="padding:10px">{{ current_variant.sku | default: 'N/A' }}</td></tr>
+          {%- if current_variant.weight > 0 -%}
+            <tr><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.weight' | t | default: 'Weight' }}</th><td style="padding:10px">{{ current_variant.weight }} {{ current_variant.weight_unit }}</td></tr>
+          {%- endif -%}
+        </table>
+      </div>
+    </details>
+
+    <details class="accordion-item" id="acc-ship">
+      <summary class="accordion-summary" aria-expanded="false">
+        <span>{{ 'products.tabs.shipping_title' | t | default: 'Shipping & Returns' }}</span>
+        <span class="material-symbols-outlined accordion-icon">add</span>
+      </summary>
+      <div class="accordion-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)">
+          <div>
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">{{ 'products.tabs.shipping_title' | t | default: 'Shipping' }}</h3>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px">
+              <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.free_standard' | t | default: 'Free standard shipping on orders over $50' }}</li>
+              <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.express' | t | default: 'Express delivery available at checkout' }}</li>
+              <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.international' | t | default: 'International shipping to select countries' }}</li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">{{ 'products.tabs.returns_title' | t | default: 'Returns' }}</h3>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px">
+              <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.days' | t | default: '30-day hassle-free returns' }}</li>
+              <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.free_defective' | t | default: 'Free return shipping on defective items' }}</li>
+              <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.refund_time' | t | default: 'Full refund within 7 business days' }}</li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+    </details>
   </div>
 
   <!-- Reviews -->
@@ -404,6 +414,24 @@ function selectVariant(optionPos, value, btn) {
     }
     const stickyId = document.getElementById('sticky-variant-id');
     if (stickyId) stickyId.value = match.id;
+
+    // Switch gallery image to matched variant image
+    if (match.featured_image && match.featured_image.src) {
+      var thumbBtns = document.querySelectorAll('.product-gallery__thumb');
+      var matchedSrc = match.featured_image.src;
+      var found = false;
+      thumbBtns.forEach(function(thumb) {
+        var thumbImg = thumb.querySelector('img');
+        if (thumbImg && thumbImg.src === matchedSrc) {
+          switchGalleryImage(matchedSrc, thumb);
+          found = true;
+        }
+      });
+      if (!found) {
+        var mainImg = document.querySelector('#main-product-image img');
+        if (mainImg) { mainImg.src = matchedSrc; mainImg.srcset = ''; }
+      }
+    }
   }
 }
 </script>

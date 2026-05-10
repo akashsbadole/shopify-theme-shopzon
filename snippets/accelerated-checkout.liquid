@@ -1,11 +1,11 @@
 {% comment %}
-  Accelerated Checkout Buttons — Required by Shopify Theme Store (Requirement #4)
+  Accelerated Checkout Buttons — Required by Shopify Theme Store
   Renders dynamic checkout buttons (Shop Pay, PayPal, Apple Pay, Google Pay, etc.)
   Usage: {% render 'accelerated-checkout', product: product, variant: variant %}
 {% endcomment %}
 
-{% if additional_checkout_buttons %}
+{%- if shop.enabled_payment_types.size > 0 -%}
   <div class="accelerated-checkout-btns" aria-label="{{ 'products.general.buy_now' | t }}">
     {{ content_for_additional_checkout_buttons }}
   </div>
-{% endif %}
+{%- endif -%}

@@ -1158,3 +1158,42 @@ window.RecentlyViewed = RecentlyViewed;
 window.openSizeGuide = openSizeGuide;
 window.closeSizeGuide = closeSizeGuide;
 window.switchGenericTab = switchGenericTab;
+
+// ============================================
+// DELIVERY LOCATION DROPDOWN
+// ============================================
+document.addEventListener('click', function(e) {
+  var locBtn = e.target.closest('.loc-btn');
+  var locDropdown = e.target.closest('.loc-dropdown');
+
+  if (locBtn) {
+    e.preventDefault();
+    var dropdown = locBtn.nextElementSibling;
+    if (dropdown && dropdown.classList.contains('loc-dropdown')) {
+      dropdown.classList.toggle('hidden');
+    }
+    return;
+  }
+
+  var opt = e.target.closest('.loc-option');
+  if (opt) {
+    e.preventDefault();
+    var country = opt.dataset.country;
+    var returnUrl = opt.dataset.return || window.location.pathname;
+    var form = document.getElementById('header-localization-form');
+    var select = document.getElementById('loc-country-select');
+    if (select && form) {
+      select.value = country;
+      var input = form.querySelector('[name=return_url]');
+      if (input) input.value = returnUrl;
+      form.submit();
+    }
+    return;
+  }
+
+  document.querySelectorAll('.loc-dropdown').forEach(function(d) {
+    if (!d.contains(e.target) && !d.previousElementSibling.classList.contains('loc-btn')) {
+      d.classList.add('hidden');
+    }
+  });
+});

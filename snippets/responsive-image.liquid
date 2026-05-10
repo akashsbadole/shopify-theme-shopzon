@@ -9,7 +9,7 @@
   assign sizes = sizes | default: '(min-width: 1200px) 50vw, 100vw'
   assign alt_text = alt | default: image.alt | default: ''
   assign class_names = class | default: ''
-  assign focal_point = image.presentation.focal_point | default: 'center center'
+  assign focal_point = image.presentation.focal_point 
 -%}
 
 {%- if image != blank -%}

@@ -17,11 +17,37 @@
     <!-- Deliver To -->
     {% if section.settings.show_location %}
     <div class="header-location" aria-label="Deliver to location">
-      <span class="loc-label">Deliver to</span>
-      <span class="loc-value">
+      <div class="loc-btn" aria-label="Select delivery location">
         <span class="material-symbols-outlined" style="font-size:14px">location_on</span>
-        {{ section.settings.location_text | default: 'Your location' }}
-      </span>
+        <span class="loc-value">
+          {% if localization.country.iso_code %}
+            {{ localization.country.name }}
+          {% else %}
+            {{ section.settings.location_text | default: 'Select location' }}
+          {% endif %}
+        </span>
+        <span class="material-symbols-outlined" style="font-size:14px">arrow_drop_down</span>
+      </div>
+      <form id="header-localization-form" style="display:none" action="{{ localization.country.url | default: '/localization' }}" method="post">
+        <select name="country_code" id="loc-country-select"></select>
+        <input type="hidden" name="return_url" value="{{ request.path }}">
+      </form>
+      <div class="loc-dropdown hidden" role="listbox" aria-label="Choose country">
+        {% for country in localization.available_countries %}
+          <a
+            href="#"
+            role="option"
+            class="loc-option{% if country == localization.country %} active{% endif %}"
+            data-country="{{ country.iso_code }}"
+            data-name="{{ country.name }}"
+            data-return="{{ request.path }}"
+            {% if country == localization.country %}aria-selected="true"{% endif %}
+          >
+            <span>{{ country.name }}</span>
+            <span class="loc-currency">{{ country.currency.iso_code }}</span>
+          </a>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 
