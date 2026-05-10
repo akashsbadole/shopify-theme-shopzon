@@ -1,0 +1,81 @@
+<section class="page-section" data-reveal>
+  <div class="page-container">
+    {% if section.settings.title != blank %}
+      <div class="section-header">
+        <h2 class="section-title">{{ section.settings.title }}</h2>
+        {% if section.settings.view_all_url != blank %}
+          <a href="{{ section.settings.view_all_url }}" class="section-link">See all</a>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="category-grid" style="grid-template-columns: repeat({{ section.settings.columns }}, 1fr)">
+      {% for block in section.blocks %}
+        {% if block.type == 'collection_card' %}
+          {% assign col = collections[block.settings.collection] %}
+          <a href="{% if col != blank %}{{ col.url }}{% else %}{{ block.settings.custom_url | default: '#' }}{% endif %}" class="category-card" {{ block.shopify_attributes }}>
+            <h3 class="category-card__title">{{ block.settings.label | default: col.title }}</h3>
+            <div class="category-card__grid">
+              {% if col != blank %}
+                {% for product in col.products limit: 4 %}
+                  <div class="category-card__item">
+                    {% if product.featured_image %}
+                      {{ product.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: product.title }}
+                    {% else %}
+                      <div style="background:var(--color-surface);aspect-ratio:1;display:flex;align-items:center;justify-content:center">
+                        <span class="material-symbols-outlined" style="color:var(--color-border);font-size:32px">image</span>
+                      </div>
+                    {% endif %}
+                    <span>{{ product.title | truncate: 18 }}</span>
+                  </div>
+                {% endfor %}
+              {% else %}
+                {% for i in (1..4) %}
+                  <div class="category-card__item">
+                    <div style="background:var(--color-surface);aspect-ratio:1;border-radius:2px"></div>
+                    <span>Item {{ i }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+            <span class="category-card__link">{{ block.settings.link_text | default: 'See more' }}</span>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Category Grid",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Section title", "default": "Shop by Category" },
+    { "type": "url", "id": "view_all_url", "label": "View all URL" },
+    { "type": "range", "id": "columns", "min": 2, "max": 5, "step": 1, "label": "Columns", "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Category Card",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "label", "label": "Override title" },
+        { "type": "text", "id": "link_text", "label": "Link text", "default": "See more" },
+        { "type": "url", "id": "custom_url", "label": "Custom URL (if no collection)" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Grid",
+      "blocks": [
+        { "type": "collection_card", "settings": { "label": "Electronics" } },
+        { "type": "collection_card", "settings": { "label": "Fashion" } },
+        { "type": "collection_card", "settings": { "label": "Home & Kitchen" } },
+        { "type": "collection_card", "settings": { "label": "Sports & Outdoors" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

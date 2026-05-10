@@ -1,0 +1,218 @@
+<header class="site-header" role="banner">
+  <div class="header-main">
+    <!-- Mobile Toggle -->
+    <button id="mobile-menu-toggle" class="header-mobile-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <!-- Logo -->
+    <a href="{{ routes.root_url }}" class="header-logo" aria-label="{{ shop.name }}">
+      {% if section.settings.logo != blank %}
+        {{ section.settings.logo | image_url: height: 60 | image_tag: loading: 'eager', width: section.settings.logo_width, height: 'auto', alt: shop.name }}
+      {% else %}
+        <span class="header-logo-text">{{ shop.name | split: ' ' | first }}<span>{% if shop.name contains ' ' %}{{ shop.name | split: ' ' | last }}{% endif %}</span></span>
+      {% endif %}
+    </a>
+
+    <!-- Deliver To -->
+    {% if section.settings.show_location %}
+    <div class="header-location" aria-label="Deliver to location">
+      <span class="loc-label">Deliver to</span>
+      <span class="loc-value">
+        <span class="material-symbols-outlined" style="font-size:14px">location_on</span>
+        {{ section.settings.location_text | default: 'Your location' }}
+      </span>
+    </div>
+    {% endif %}
+
+    <!-- Search Bar -->
+    <form action="{{ routes.search_url }}" method="get" class="header-search" role="search">
+      <input type="hidden" name="type" value="product">
+      {% if section.settings.show_category_dropdown %}
+      <button type="button" class="header-search-category" aria-label="Search category">
+        All
+        <span class="material-symbols-outlined" style="font-size:14px">arrow_drop_down</span>
+      </button>
+      {% endif %}
+      <input
+        type="search"
+        name="q"
+        class="header-search-input"
+        placeholder="{{ section.settings.search_placeholder | default: 'Search products...' }}"
+        value="{{ search.terms | escape }}"
+        aria-label="Search"
+        autocomplete="off"
+      >
+      <button type="submit" class="header-search-btn" aria-label="Search">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+    </form>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <!-- Mobile Search Trigger -->
+      <button class="header-action-btn" data-search-trigger aria-label="Search" style="display:none" id="mobile-search-trigger">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+
+      <!-- Account -->
+      {% if shop.customer_accounts_enabled %}
+        {% if customer %}
+          <a href="{{ routes.account_url }}" class="header-action-btn" aria-label="Account">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span style="display:flex;flex-direction:column;line-height:1">
+              <span class="action-label">Hello, {{ customer.first_name }}</span>
+              <span class="action-main">Account</span>
+            </span>
+          </a>
+        {% else %}
+          <a href="{{ routes.account_login_url }}" class="header-action-btn" aria-label="Sign in">
+            <span class="material-symbols-outlined">account_circle</span>
+            <span style="display:flex;flex-direction:column;line-height:1">
+              <span class="action-label">Hello, sign in</span>
+              <span class="action-main">Account</span>
+            </span>
+          </a>
+        {% endif %}
+      {% endif %}
+
+      <!-- Orders -->
+      {% if customer %}
+        <a href="{{ routes.account_url }}/orders" class="header-action-btn" aria-label="Returns and orders">
+          <span class="material-symbols-outlined">orders</span>
+          <span style="display:flex;flex-direction:column;line-height:1">
+            <span class="action-label">Returns</span>
+            <span class="action-main">&amp; Orders</span>
+          </span>
+        </a>
+      {% endif %}
+
+      <!-- Wishlist -->
+      {% if section.settings.show_wishlist %}
+        <a href="/pages/wishlist" class="header-action-btn" aria-label="Wishlist">
+          <span class="material-symbols-outlined">favorite</span>
+          <span style="display:flex;flex-direction:column;line-height:1">
+            <span class="action-label">Saved</span>
+            <span class="action-main">Items</span>
+          </span>
+        </a>
+      {% endif %}
+
+      <!-- Cart -->
+      <button class="header-action-btn header-cart-btn" data-cart-trigger aria-label="Cart">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="cart-count-badge cart-count" aria-label="Cart item count" style="display:{% if cart.item_count > 0 %}flex{% else %}none{% endif %}">
+          {{ cart.item_count }}
+        </span>
+        <span style="display:flex;flex-direction:column;line-height:1">
+          <span class="action-label">&nbsp;</span>
+          <span class="action-main">Cart</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav Bar -->
+  <nav class="header-nav" aria-label="Main navigation">
+    <div class="header-nav-inner">
+      <button class="nav-link nav-link-all" id="mobile-menu-toggle-nav" aria-label="All departments" onclick="document.getElementById('mobile-menu-toggle').click()">
+        <span class="material-symbols-outlined" style="font-size:18px">menu</span>
+        All
+      </button>
+
+      {% for link in linklists[section.settings.main_menu].links %}
+        {% if link.links != blank %}
+          <div class="nav-mega-wrap" style="position:relative">
+            <a href="{{ link.url }}" class="nav-link" aria-haspopup="true">
+              {{ link.title }}
+              <span class="material-symbols-outlined" style="font-size:14px">arrow_drop_down</span>
+            </a>
+            <div class="nav-mega-dropdown" style="position:absolute;top:100%;left:0;background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);box-shadow:var(--shadow-dropdown);min-width:180px;z-index:50;display:none;padding:8px 0;">
+              {% for child in link.links %}
+                <a href="{{ child.url }}" style="display:block;padding:8px 16px;font-size:14px;color:var(--color-text-primary);text-decoration:none;white-space:nowrap;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background=''">
+                  {{ child.title }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ link.url }}" class="nav-link" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </nav>
+</header>
+
+<style>
+  .nav-mega-wrap:hover .nav-mega-dropdown { display: block !important; }
+  @media (max-width: 768px) {
+    .header-mobile-toggle { display: flex !important; }
+    .header-search { display: none !important; }
+    #mobile-search-trigger { display: flex !important; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 250,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 150
+    },
+    {
+      "type": "link_list",
+      "id": "main_menu",
+      "label": "Main menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_location",
+      "label": "Show delivery location",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "location_text",
+      "label": "Location text",
+      "default": "Select location"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category_dropdown",
+      "label": "Show search category dropdown",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search products, brands and more..."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show wishlist button",
+      "default": true
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}

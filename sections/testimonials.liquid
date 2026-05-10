@@ -1,0 +1,97 @@
+<section class="testimonials-section" data-reveal>
+  <div class="page-container">
+    {% if section.settings.title != blank %}
+      <div style="text-align:center;margin-bottom:var(--space-6)">
+        {% if section.settings.eyebrow != blank %}
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-accent-yellow);margin-bottom:var(--space-2)">{{ section.settings.eyebrow }}</div>
+        {% endif %}
+        <h2 style="font-size:var(--font-size-2xl);font-weight:700;color:#fff">{{ section.settings.title }}</h2>
+        {% if section.settings.subtitle != blank %}
+          <p style="font-size:var(--font-size-body);color:rgba(255,255,255,0.6);margin-top:var(--space-2)">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="testimonials-grid" style="grid-template-columns:repeat({{ section.settings.columns }},1fr)">
+      {% for block in section.blocks %}
+        {% if block.type == 'testimonial' %}
+          <div class="testimonial-card" {{ block.shopify_attributes }}>
+            <div class="testimonial-stars">
+              {% assign rating = block.settings.rating | default: 5 %}
+              {% for i in (1..5) %}
+                {% if i <= rating %}★{% else %}☆{% endif %}
+              {% endfor %}
+            </div>
+            <p class="testimonial-text">"{{ block.settings.text }}"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-author-avatar">{{ block.settings.name | slice: 0 | upcase }}</div>
+              <div>
+                <div>{{ block.settings.name }}</div>
+                <div class="testimonial-verified">
+                  {% if block.settings.verified %}
+                    <span class="material-symbols-outlined" style="font-size:12px">verified</span> Verified Purchase ·
+                  {% endif %}
+                  {{ block.settings.location }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_aggregate %}
+      <div style="text-align:center;margin-top:var(--space-6);display:flex;align-items:center;justify-content:center;gap:var(--space-4);flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:var(--space-2)">
+          <span style="font-size:36px;font-weight:800;color:#fff">{{ section.settings.aggregate_score }}</span>
+          <div>
+            <div style="color:var(--color-stars);font-size:18px">★★★★★</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.6)">{{ section.settings.aggregate_count }}</div>
+          </div>
+        </div>
+        {% if section.settings.platforms != blank %}
+          <div style="font-size:13px;color:rgba(255,255,255,0.6)">{{ section.settings.platforms }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Customer Reviews" },
+    { "type": "text", "id": "title", "label": "Section title", "default": "What Our Customers Say" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle" },
+    { "type": "range", "id": "columns", "min": 1, "max": 4, "step": 1, "label": "Columns", "default": 3 },
+    { "type": "checkbox", "id": "show_aggregate", "label": "Show aggregate score", "default": true },
+    { "type": "text", "id": "aggregate_score", "label": "Aggregate score", "default": "4.9" },
+    { "type": "text", "id": "aggregate_count", "label": "Review count label", "default": "2,400+ reviews" },
+    { "type": "text", "id": "platforms", "label": "Platforms text", "default": "across Google, Trustpilot & Shopify" }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        { "type": "range", "id": "rating", "min": 1, "max": 5, "step": 1, "label": "Star rating", "default": 5 },
+        { "type": "textarea", "id": "text", "label": "Review text", "default": "Absolutely love this product! Quality is outstanding and shipping was super fast. Will definitely order again." },
+        { "type": "text", "id": "name", "label": "Customer name", "default": "Sarah M." },
+        { "type": "text", "id": "location", "label": "Location / Label", "default": "New York, USA" },
+        { "type": "checkbox", "id": "verified", "label": "Show Verified Purchase badge", "default": true }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        { "type": "testimonial", "settings": { "name": "Sarah M.", "location": "New York", "text": "Absolutely love this! Quality is outstanding and shipping was super fast." } },
+        { "type": "testimonial", "settings": { "name": "James T.", "location": "London", "text": "Best purchase I've made this year. Packaging was perfect and product exceeded expectations." } },
+        { "type": "testimonial", "settings": { "name": "Priya R.", "location": "Toronto", "text": "Amazing customer service and great product. Would recommend to everyone!" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

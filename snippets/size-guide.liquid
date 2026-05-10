@@ -1,0 +1,65 @@
+{% comment %}
+  Size Guide Modal Snippet
+  Usage: {% render 'size-guide', product: product %}
+{% endcomment %}
+
+<div id="size-guide-overlay" class="size-guide-overlay" role="dialog" aria-modal="true" aria-label="Size guide">
+  <div class="size-guide-modal">
+    <button onclick="closeSizeGuide()" style="position:absolute;top:var(--space-3);right:var(--space-3);background:none;border:none;cursor:pointer;display:flex;align-items:center;color:var(--color-text-secondary)" aria-label="Close size guide">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+
+    <h2>Size Guide</h2>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:var(--space-4)">All measurements are in centimetres (cm). For the best fit, measure your body and compare with the chart below.</p>
+
+    {% if product.type == 'Footwear' or product.tags contains 'shoes' %}
+      <!-- Shoe size guide -->
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:var(--space-2)">Footwear</h3>
+      <table class="size-guide-table">
+        <thead><tr><th>UK</th><th>EU</th><th>US Men</th><th>US Women</th><th>CM</th></tr></thead>
+        <tbody>
+          <tr><td>4</td><td>37</td><td>5</td><td>6</td><td>23</td></tr>
+          <tr><td>5</td><td>38</td><td>6</td><td>7</td><td>24</td></tr>
+          <tr><td>6</td><td>39</td><td>7</td><td>8</td><td>25</td></tr>
+          <tr><td>7</td><td>40</td><td>8</td><td>9</td><td>26</td></tr>
+          <tr><td>8</td><td>41</td><td>9</td><td>10</td><td>27</td></tr>
+          <tr><td>9</td><td>42</td><td>10</td><td>11</td><td>28</td></tr>
+          <tr><td>10</td><td>43</td><td>11</td><td>12</td><td>29</td></tr>
+          <tr><td>11</td><td>44</td><td>12</td><td>13</td><td>30</td></tr>
+        </tbody>
+      </table>
+    {% else %}
+      <!-- Clothing size guide -->
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:var(--space-2)">Clothing</h3>
+      <table class="size-guide-table">
+        <thead><tr><th>Size</th><th>UK</th><th>EU</th><th>US</th><th>Chest (cm)</th><th>Waist (cm)</th><th>Hips (cm)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>XS</strong></td><td>6–8</td><td>32–34</td><td>2–4</td><td>79–83</td><td>62–66</td><td>87–91</td></tr>
+          <tr><td><strong>S</strong></td><td>8–10</td><td>34–36</td><td>4–6</td><td>83–87</td><td>66–70</td><td>91–95</td></tr>
+          <tr><td><strong>M</strong></td><td>10–12</td><td>36–38</td><td>6–8</td><td>87–92</td><td>70–75</td><td>95–100</td></tr>
+          <tr><td><strong>L</strong></td><td>12–14</td><td>38–40</td><td>8–10</td><td>92–97</td><td>75–80</td><td>100–105</td></tr>
+          <tr><td><strong>XL</strong></td><td>14–16</td><td>40–42</td><td>10–12</td><td>97–102</td><td>80–85</td><td>105–110</td></tr>
+          <tr><td><strong>2XL</strong></td><td>16–18</td><td>42–44</td><td>12–14</td><td>102–108</td><td>85–91</td><td>110–116</td></tr>
+          <tr><td><strong>3XL</strong></td><td>18–20</td><td>44–46</td><td>14–16</td><td>108–114</td><td>91–97</td><td>116–122</td></tr>
+        </tbody>
+      </table>
+    {% endif %}
+
+    <div style="margin-top:var(--space-4);padding:var(--space-3);background:var(--color-surface);border-radius:var(--border-radius);font-size:13px;color:var(--color-text-secondary)">
+      <strong style="color:var(--color-text-primary);display:flex;align-items:center;gap:6px;margin-bottom:6px">
+        <span class="material-symbols-outlined" style="font-size:16px">straighten</span>
+        How to measure
+      </strong>
+      <ul style="padding-left:var(--space-4);display:flex;flex-direction:column;gap:4px">
+        <li><strong>Chest:</strong> Measure around the fullest part of your chest, keeping the tape horizontal.</li>
+        <li><strong>Waist:</strong> Measure around your natural waistline, at the narrowest point.</li>
+        <li><strong>Hips:</strong> Measure around the fullest part of your hips, about 20cm below your waist.</li>
+      </ul>
+    </div>
+
+    <p style="font-size:12px;color:var(--color-text-muted);margin-top:var(--space-3)">
+      If you're between sizes, we recommend sizing up. Still unsure?
+      <a href="/pages/contact" style="color:var(--color-link)">Contact us</a> and we'll help.
+    </p>
+  </div>
+</div>

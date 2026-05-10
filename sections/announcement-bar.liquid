@@ -1,0 +1,63 @@
+{% if section.settings.show_announcement %}
+<div class="announcement-bar" data-id="{{ section.id }}" role="region" aria-label="Announcement">
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;max-width:var(--max-width);margin:0 auto;padding:0 20px;">
+    {% if section.settings.icon != blank %}
+      <span class="material-symbols-outlined" style="font-size:16px">{{ section.settings.icon }}</span>
+    {% endif %}
+    <span>
+      {% if section.settings.announcement_link != blank %}
+        <a href="{{ section.settings.announcement_link }}">{{ section.settings.announcement_text }}</a>
+      {% else %}
+        {{ section.settings.announcement_text }}
+      {% endif %}
+    </span>
+    {% if section.settings.show_dismiss %}
+      <button id="announcement-dismiss" aria-label="Dismiss announcement" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;padding:0;display:flex;align-items:center;margin-left:auto;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:16px">close</span>
+      </button>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show announcement",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement text",
+      "default": "🚚 Free shipping on orders over $50 — Shop now and save!"
+    },
+    {
+      "type": "text",
+      "id": "icon",
+      "label": "Material icon name (optional)",
+      "placeholder": "e.g. local_shipping"
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Link (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dismiss",
+      "label": "Show dismiss button",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,55 @@
+{% comment %}
+  Reusable address form snippet.
+  Usage: {% render 'address-form', form: form %}
+{% endcomment %}
+
+<div class="form-row form-row--2" style="margin-bottom:var(--space-3)">
+  <div class="field">
+    <label class="field-label" for="{{ form.id }}-first-name">First name</label>
+    <input class="field-input" type="text" name="address[first_name]" id="{{ form.id }}-first-name" value="{{ form.first_name }}" autocomplete="given-name">
+  </div>
+  <div class="field">
+    <label class="field-label" for="{{ form.id }}-last-name">Last name</label>
+    <input class="field-input" type="text" name="address[last_name]" id="{{ form.id }}-last-name" value="{{ form.last_name }}" autocomplete="family-name">
+  </div>
+</div>
+<div class="field" style="margin-bottom:var(--space-3)">
+  <label class="field-label" for="{{ form.id }}-company">Company (optional)</label>
+  <input class="field-input" type="text" name="address[company]" id="{{ form.id }}-company" value="{{ form.company }}" autocomplete="organization">
+</div>
+<div class="field" style="margin-bottom:var(--space-3)">
+  <label class="field-label" for="{{ form.id }}-address1">Address <span>*</span></label>
+  <input class="field-input" type="text" name="address[address1]" id="{{ form.id }}-address1" value="{{ form.address1 }}" autocomplete="address-line1" required>
+</div>
+<div class="field" style="margin-bottom:var(--space-3)">
+  <label class="field-label" for="{{ form.id }}-address2">Apartment, suite, etc. (optional)</label>
+  <input class="field-input" type="text" name="address[address2]" id="{{ form.id }}-address2" value="{{ form.address2 }}" autocomplete="address-line2">
+</div>
+<div class="form-row form-row--2" style="margin-bottom:var(--space-3)">
+  <div class="field">
+    <label class="field-label" for="{{ form.id }}-city">City <span>*</span></label>
+    <input class="field-input" type="text" name="address[city]" id="{{ form.id }}-city" value="{{ form.city }}" autocomplete="address-level2" required>
+  </div>
+  <div class="field">
+    <label class="field-label" for="{{ form.id }}-country">Country <span>*</span></label>
+    <select class="field-input" name="address[country]" id="{{ form.id }}-country" autocomplete="country-name" required data-default="{{ form.country }}">
+      {{ all_country_option_tags }}
+    </select>
+  </div>
+</div>
+<div class="form-row form-row--2" style="margin-bottom:var(--space-3)">
+  <div class="field">
+    <label class="field-label" for="{{ form.id }}-province">State / Province</label>
+    <select class="field-input" name="address[province]" id="{{ form.id }}-province" autocomplete="address-level1" data-default="{{ form.province }}">
+      <option value="">— Select —</option>
+    </select>
+  </div>
+  <div class="field">
+    <label class="field-label" for="{{ form.id }}-zip">ZIP / Postal Code <span>*</span></label>
+    <input class="field-input" type="text" name="address[zip]" id="{{ form.id }}-zip" value="{{ form.zip }}" autocomplete="postal-code" required>
+  </div>
+</div>
+<div class="field">
+  <label class="field-label" for="{{ form.id }}-phone">Phone (optional)</label>
+  <input class="field-input" type="tel" name="address[phone]" id="{{ form.id }}-phone" value="{{ form.phone }}" autocomplete="tel">
+</div>

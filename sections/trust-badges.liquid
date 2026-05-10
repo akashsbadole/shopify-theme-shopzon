@@ -1,0 +1,76 @@
+<section style="background:var(--color-surface-white);border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);padding:var(--space-5) 0" data-reveal>
+  <div class="page-container">
+    <div style="display:grid;grid-template-columns:repeat({{ section.blocks.size | default: 4 }},1fr);gap:var(--space-4)">
+      {% for block in section.blocks %}
+        {% if block.type == 'trust_item' %}
+          <div style="display:flex;align-items:center;gap:12px" {{ block.shopify_attributes }}>
+            <span class="material-symbols-outlined" style="font-size:32px;color:{{ block.settings.icon_color | default: '#FF9900' }};flex-shrink:0">{{ block.settings.icon | default: 'local_shipping' }}</span>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--color-text-primary)">{{ block.settings.title }}</div>
+              <div style="font-size:12px;color:var(--color-text-secondary)">{{ block.settings.subtitle }}</div>
+            </div>
+          </div>
+        {% endif %}
+      {% else %}
+        <!-- Default trust badges -->
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="material-symbols-outlined" style="font-size:32px;color:var(--color-accent-orange);flex-shrink:0">local_shipping</span>
+          <div>
+            <div style="font-size:14px;font-weight:700">Free Delivery</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">On orders over $50</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="material-symbols-outlined" style="font-size:32px;color:var(--color-accent-orange);flex-shrink:0">autorenew</span>
+          <div>
+            <div style="font-size:14px;font-weight:700">Easy Returns</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">30-day hassle-free</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="material-symbols-outlined" style="font-size:32px;color:var(--color-accent-orange);flex-shrink:0">security</span>
+          <div>
+            <div style="font-size:14px;font-weight:700">Secure Checkout</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">100% protected payments</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="material-symbols-outlined" style="font-size:32px;color:var(--color-accent-orange);flex-shrink:0">support_agent</span>
+          <div>
+            <div style="font-size:14px;font-weight:700">24/7 Support</div>
+            <div style="font-size:12px;color:var(--color-text-secondary)">Here when you need us</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "Trust Item",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Material icon name", "default": "local_shipping", "info": "Find icons at fonts.google.com/icons" },
+        { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#FF9900" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free Delivery" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "On orders over $50" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges",
+      "blocks": [
+        { "type": "trust_item", "settings": { "icon": "local_shipping", "title": "Free Delivery", "subtitle": "On orders over $50" } },
+        { "type": "trust_item", "settings": { "icon": "autorenew", "title": "Easy Returns", "subtitle": "30-day hassle-free" } },
+        { "type": "trust_item", "settings": { "icon": "security", "title": "Secure Checkout", "subtitle": "100% protected payments" } },
+        { "type": "trust_item", "settings": { "icon": "support_agent", "title": "24/7 Support", "subtitle": "Here when you need us" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,57 @@
+{% assign collection = collections[section.settings.collection] %}
+
+<section class="page-section" style="background:var(--color-surface-white);border-top:3px solid var(--color-accent-orange);border-bottom:1px solid var(--color-border)" data-reveal>
+  <div class="page-container">
+    <div class="section-header">
+      <h2 class="section-title">{{ section.settings.title | default: 'Featured Products' }}</h2>
+      {% if collection != blank %}
+        <a href="{{ collection.url }}" class="section-link">See all deals <span style="font-size:16px">›</span></a>
+      {% elsif section.settings.view_all_url != blank %}
+        <a href="{{ section.settings.view_all_url }}" class="section-link">See all <span style="font-size:16px">›</span></a>
+      {% endif %}
+    </div>
+
+    <div class="products-grid products-grid--{{ section.settings.columns }}" style="gap:var(--space-3)">
+      {% if collection != blank %}
+        {% for product in collection.products limit: section.settings.products_to_show %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      {% else %}
+        {% comment %} Fallback to recently added products {% endcomment %}
+        {% assign recent = all_products | limit: section.settings.products_to_show %}
+        {% for product in recent %}
+          {% render 'product-card', product: product %}
+        {% else %}
+          {% for i in (1..section.settings.products_to_show) %}
+            <div class="product-card">
+              <div class="product-card__image-wrap" style="background:var(--color-surface)">
+                <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--color-border)">
+                  <span class="material-symbols-outlined" style="font-size:48px">inventory_2</span>
+                </div>
+              </div>
+              <div class="product-card__body">
+                <div class="product-card__brand" style="background:var(--color-surface);height:12px;border-radius:2px;width:60%"></div>
+                <div class="product-card__title" style="background:var(--color-surface);height:14px;border-radius:2px;margin-top:4px"></div>
+                <div class="product-card__title" style="background:var(--color-surface);height:14px;border-radius:2px;width:80%"></div>
+              </div>
+            </div>
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Section title", "default": "Featured Products" },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "products_to_show", "min": 2, "max": 12, "step": 1, "label": "Products to show", "default": 4 },
+    { "type": "range", "id": "columns", "min": 2, "max": 5, "step": 1, "label": "Columns (desktop)", "default": 4 },
+    { "type": "url", "id": "view_all_url", "label": "View all URL (if no collection)" }
+  ],
+  "presets": [{ "name": "Featured Products" }]
+}
+{% endschema %}

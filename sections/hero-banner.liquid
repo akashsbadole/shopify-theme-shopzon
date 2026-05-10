@@ -1,0 +1,48 @@
+{% comment %} Hero Banner Section {% endcomment %}
+<section class="hero" style="height:{{ section.settings.hero_height }}px;min-height:360px" data-reveal>
+  {% if section.settings.hero_image != blank %}
+    <div class="hero__media">
+      {{ section.settings.hero_image | image_url: width: 1800 | image_tag: loading: 'eager', alt: section.settings.hero_title }}
+    </div>
+  {% else %}
+    <div class="hero__media" style="background:linear-gradient(135deg,#232F3E 0%,#37475A 60%,#131921 100%)"></div>
+  {% endif %}
+  <div class="hero__overlay" style="background:{{ section.settings.overlay_color }};opacity:{{ section.settings.overlay_opacity | divided_by: 100.0 }}"></div>
+
+  <div class="hero__content" style="color:{{ section.settings.text_color }}">
+    {% if section.settings.eyebrow != blank %}
+      <div class="hero__eyebrow">{{ section.settings.eyebrow }}</div>
+    {% endif %}
+    <h1 class="hero__title">{{ section.settings.hero_title | default: 'Upgrade your tech, elevate your life.' }}</h1>
+    <p class="hero__text">{{ section.settings.hero_text | default: 'Explore the latest products with exclusive seasonal deals.' }}</p>
+    <div class="hero__actions">
+      {% if section.settings.btn1_text != blank %}
+        <a href="{{ section.settings.btn1_url }}" class="btn btn-primary btn-lg">{{ section.settings.btn1_text }}</a>
+      {% endif %}
+      {% if section.settings.btn2_text != blank %}
+        <a href="{{ section.settings.btn2_url }}" class="btn btn-ghost btn-lg">{{ section.settings.btn2_text }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [
+    { "type": "image_picker", "id": "hero_image", "label": "Background image" },
+    { "type": "range", "id": "hero_height", "min": 300, "max": 700, "step": 20, "unit": "px", "label": "Height", "default": 520 },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow text" },
+    { "type": "text", "id": "hero_title", "label": "Heading", "default": "Upgrade your tech, elevate your life." },
+    { "type": "textarea", "id": "hero_text", "label": "Subheading", "default": "Explore the latest products with exclusive seasonal deals and free shipping." },
+    { "type": "url", "id": "btn1_url", "label": "Button 1 URL" },
+    { "type": "text", "id": "btn1_text", "label": "Button 1 Text", "default": "Shop New Arrivals" },
+    { "type": "url", "id": "btn2_url", "label": "Button 2 URL" },
+    { "type": "text", "id": "btn2_text", "label": "Button 2 Text" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#FFFFFF" },
+    { "type": "color", "id": "overlay_color", "label": "Overlay color", "default": "#131921" },
+    { "type": "range", "id": "overlay_opacity", "min": 0, "max": 80, "step": 5, "label": "Overlay opacity", "default": 40 }
+  ],
+  "presets": [{ "name": "Hero Banner" }]
+}
+{% endschema %}

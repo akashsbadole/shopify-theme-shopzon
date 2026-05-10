@@ -1,0 +1,16 @@
+{% comment %}
+  Recently Viewed Products Section
+  Add this section anywhere on the homepage or product page.
+{% endcomment %}
+
+<section id="recently-viewed-section" class="page-section recently-viewed" style="display:none" data-reveal>
+  {% comment %} Populated by RecentlyViewed.render('#recently-viewed-section') in JS {% endcomment %}
+</section>
+
+{% schema %}
+{
+  "name": "Recently Viewed",
+  "settings": [],
+  "presets": [{ "name": "Recently Viewed Products" }]
+}
+{% endschema %}

@@ -1,0 +1,63 @@
+{% comment %} Promo Banner - full width colored strip with offers {% endcomment %}
+
+<section class="page-section" data-reveal>
+  <div class="page-container">
+    <div style="display:grid;grid-template-columns:repeat({{ section.blocks | size | at_most: 3 }},1fr);gap:var(--space-3)">
+      {% for block in section.blocks %}
+        {% if block.type == 'promo_card' %}
+          <a href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}
+            style="background:{{ block.settings.bg_color | default: '#232F3E' }};color:{{ block.settings.text_color | default: '#fff' }};border-radius:var(--border-radius);padding:var(--space-5);display:flex;flex-direction:column;justify-content:space-between;min-height:180px;text-decoration:none;position:relative;overflow:hidden">
+            {% if block.settings.eyebrow != blank %}
+              <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;opacity:0.8">{{ block.settings.eyebrow }}</span>
+            {% endif %}
+            <div>
+              <div style="font-size:22px;font-weight:700;line-height:1.2;margin-bottom:6px">{{ block.settings.title }}</div>
+              {% if block.settings.subtitle != blank %}
+                <div style="font-size:13px;opacity:0.8">{{ block.settings.subtitle }}</div>
+              {% endif %}
+            </div>
+            <span style="font-size:13px;font-weight:600;color:{{ block.settings.link_color | default: '#FF9900' }};margin-top:12px">
+              {{ block.settings.cta_text | default: 'Shop now' }} ›
+            </span>
+            {% if block.settings.badge != blank %}
+              <div style="position:absolute;top:12px;right:12px;background:var(--color-accent-orange);color:#131921;font-size:11px;font-weight:700;padding:3px 8px;border-radius:2px;text-transform:uppercase">{{ block.settings.badge }}</div>
+            {% endif %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Promo Banners",
+  "blocks": [
+    {
+      "type": "promo_card",
+      "name": "Promo Card",
+      "settings": [
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow label" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Up to 40% off" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle" },
+        { "type": "text", "id": "cta_text", "label": "CTA text", "default": "Shop now" },
+        { "type": "text", "id": "badge", "label": "Badge label (e.g. HOT)" },
+        { "type": "url", "id": "url", "label": "Link URL" },
+        { "type": "color", "id": "bg_color", "label": "Background color", "default": "#232F3E" },
+        { "type": "color", "id": "text_color", "label": "Text color", "default": "#FFFFFF" },
+        { "type": "color", "id": "link_color", "label": "Link color", "default": "#FF9900" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo Banners",
+      "blocks": [
+        { "type": "promo_card", "settings": { "eyebrow": "Limited Time", "title": "Up to 40% off Electronics", "cta_text": "Shop deals", "badge": "HOT" } },
+        { "type": "promo_card", "settings": { "eyebrow": "Free Shipping", "title": "Orders over $50 ship free", "bg_color": "#8a5100", "cta_text": "Learn more" } },
+        { "type": "promo_card", "settings": { "eyebrow": "New Arrivals", "title": "Fresh drops every week", "bg_color": "#00687a", "cta_text": "Explore" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

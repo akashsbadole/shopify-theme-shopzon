@@ -1,0 +1,83 @@
+{% if section.settings.enabled %}
+<div id="newsletter-popup" class="newsletter-popup-overlay" data-delay="{{ section.settings.delay | times: 1000 }}" aria-label="Newsletter signup" role="dialog">
+  <div class="newsletter-popup" onclick="event.stopPropagation()">
+
+    <!-- Close -->
+    <button class="newsletter-popup__close" aria-label="Close popup">
+      <span class="material-symbols-outlined" style="font-size:16px">close</span>
+    </button>
+
+    <!-- Media panel -->
+    <div class="newsletter-popup__media">
+      {% if section.settings.image != blank %}
+        {{ section.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: section.settings.title, style: 'width:100%;height:100%;object-fit:cover' }}
+      {% else %}
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#232F3E,#FF9900);display:flex;align-items:center;justify-content:center;min-height:300px">
+          <span class="material-symbols-outlined" style="font-size:72px;color:rgba(255,255,255,0.3)">local_offer</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Content panel -->
+    <div class="newsletter-popup__content">
+      {% if section.settings.eyebrow != blank %}
+        <div class="newsletter-popup__eyebrow">{{ section.settings.eyebrow }}</div>
+      {% endif %}
+
+      <div class="newsletter-popup__title">{{ section.settings.title | default: 'Join the family' }}</div>
+
+      {% if section.settings.offer != blank %}
+        <div class="newsletter-popup__offer">{{ section.settings.offer }}</div>
+      {% endif %}
+
+      <p class="newsletter-popup__text">{{ section.settings.text | default: 'Subscribe to get exclusive deals, early access, and new arrivals straight to your inbox.' }}</p>
+
+      {% form 'customer' %}
+        <input type="hidden" name="contact[tags]" value="newsletter,popup">
+        {% if form.posted_successfully? %}
+          <div style="background:#d1fae5;border:1px solid #067D62;border-radius:var(--border-radius);padding:var(--space-3);text-align:center;font-size:13px;color:#065f46">
+            <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle">check_circle</span>
+            {{ section.settings.success_text | default: "🎉 You're in! Check your inbox for your discount." }}
+          </div>
+        {% else %}
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <input
+              type="email"
+              name="contact[email]"
+              placeholder="{{ section.settings.placeholder | default: 'Enter your email' }}"
+              class="field-input"
+              required
+              style="font-size:14px"
+            >
+            <button type="submit" class="btn btn-primary btn-full">
+              {{ section.settings.btn_text | default: 'Get My Discount' }}
+            </button>
+          </div>
+        {% endif %}
+      {% endform %}
+
+      <div class="newsletter-popup__skip">{{ section.settings.skip_text | default: 'No thanks, I prefer to pay full price' }}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Newsletter Popup",
+  "settings": [
+    { "type": "checkbox", "id": "enabled", "label": "Enable popup", "default": true },
+    { "type": "range", "id": "delay", "min": 2, "max": 30, "step": 1, "unit": "sec", "label": "Show after (seconds)", "default": 5 },
+    { "type": "image_picker", "id": "image", "label": "Side image" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow text", "default": "Limited Time Offer" },
+    { "type": "text", "id": "title", "label": "Headline", "default": "Join the family" },
+    { "type": "text", "id": "offer", "label": "Offer text (big)", "default": "Get 10% Off" },
+    { "type": "textarea", "id": "text", "label": "Description", "default": "Subscribe to get exclusive deals, early access, and new arrivals." },
+    { "type": "text", "id": "placeholder", "label": "Email placeholder", "default": "Enter your email" },
+    { "type": "text", "id": "btn_text", "label": "Button text", "default": "Get My Discount" },
+    { "type": "text", "id": "success_text", "label": "Success message", "default": "🎉 You're in! Check your inbox for your discount." },
+    { "type": "text", "id": "skip_text", "label": "Skip text", "default": "No thanks, I prefer to pay full price" }
+  ],
+  "presets": [{ "name": "Newsletter Popup" }]
+}
+{% endschema %}

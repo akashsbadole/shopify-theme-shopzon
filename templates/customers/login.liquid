@@ -1,0 +1,70 @@
+{% comment %} Customer Login Template {% endcomment %}
+
+<div class="auth-page">
+  <div style="width:100%;max-width:460px">
+
+    <!-- Logo -->
+    <div class="auth-logo" style="margin-bottom:var(--space-5)">
+      <a href="{{ routes.root_url }}" style="font-size:26px;font-weight:800;color:var(--color-nav-dark);text-decoration:none">
+        {{ shop.name | split: ' ' | first }}<span style="color:var(--color-accent-orange)">{{ shop.name | split: ' ' | last }}</span>
+      </a>
+    </div>
+
+    <div class="auth-card">
+      <h1 class="auth-title">Sign in</h1>
+      <p class="auth-subtitle" style="margin-bottom:var(--space-4)">Access your account and orders</p>
+
+      {% form 'customer_login' %}
+        {% if form.errors %}
+          <div style="background:var(--color-error-container,#ffdad6);border:1px solid var(--color-error);border-radius:var(--border-radius);padding:var(--space-3);margin-bottom:var(--space-4);font-size:13px;color:var(--color-error)">
+            <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle">error</span>
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div class="field" style="margin-bottom:var(--space-4)">
+          <label class="field-label" for="login-email">Email address</label>
+          <input class="field-input" type="email" name="customer[email]" id="login-email" autocomplete="email" autocorrect="off" autocapitalize="off" placeholder="you@example.com" required>
+        </div>
+
+        <div class="field" style="margin-bottom:var(--space-2)">
+          <label class="field-label" for="login-password">Password</label>
+          <div style="position:relative">
+            <input class="field-input" type="password" name="customer[password]" id="login-password" autocomplete="current-password" placeholder="Your password" required style="padding-right:44px">
+            <button type="button" onclick="togglePasswordVisibility('login-password',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--color-text-secondary);display:flex;align-items:center">
+              <span class="material-symbols-outlined" style="font-size:18px">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align:right;margin-bottom:var(--space-4)">
+          <a href="{{ routes.account_recover_url }}" style="font-size:13px;color:var(--color-link)">Forgot your password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Sign in</button>
+      {% endform %}
+
+      <div class="auth-divider"><span>New to {{ shop.name }}?</span></div>
+
+      <a href="{{ routes.account_register_url }}" class="btn btn-ghost btn-full btn-lg">Create your account</a>
+    </div>
+
+    <p style="text-align:center;margin-top:var(--space-4);font-size:12px;color:var(--color-text-secondary)">
+      By signing in, you agree to our <a href="{{ shop.terms_of_service.url }}" style="color:var(--color-link)">Terms</a> and <a href="{{ shop.privacy_policy.url }}" style="color:var(--color-link)">Privacy Policy</a>.
+    </p>
+  </div>
+</div>
+
+<script>
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const icon = btn.querySelector('.material-symbols-outlined');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    icon.textContent = 'visibility';
+  }
+}
+</script>

@@ -1,0 +1,219 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Stitch",
+    "theme_version": "1.0.0",
+    "theme_author": "Stitch Theme",
+    "theme_documentation_url": "https://your-docs-url.com",
+    "theme_support_url": "https://themeforest.net/item/stitch/support"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      { "type": "header", "content": "Header & Navigation" },
+      { "type": "color", "id": "header_bg_color", "label": "Header background", "default": "#232F3E" },
+      { "type": "header", "content": "Accent Colors" },
+      { "type": "color", "id": "color_accent_primary", "label": "Primary accent (buttons, highlights)", "default": "#FF9900" },
+      { "type": "color", "id": "color_accent_secondary", "label": "Secondary accent (Buy Now)", "default": "#FEBD69" },
+      { "type": "color", "id": "color_link", "label": "Link color", "default": "#007185" },
+      { "type": "header", "content": "Body" },
+      { "type": "color", "id": "color_body_bg", "label": "Page background", "default": "#F3F3F3" },
+      { "type": "color", "id": "color_text_primary", "label": "Primary text", "default": "#0F1111" }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      { "type": "font_picker", "id": "type_header_font", "label": "Heading font", "default": "inter_n7" },
+      { "type": "font_picker", "id": "type_body_font", "label": "Body font", "default": "inter_n4" },
+      {
+        "type": "range",
+        "id": "type_body_size",
+        "min": 12, "max": 18, "step": 1, "unit": "px",
+        "label": "Body font size",
+        "default": 14
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_max_width",
+        "min": 1100, "max": 1600, "step": 50, "unit": "px",
+        "label": "Max page width",
+        "default": 1500
+      },
+      {
+        "type": "range",
+        "id": "page_gutter",
+        "min": 10, "max": 40, "step": 5, "unit": "px",
+        "label": "Page side padding",
+        "default": 20
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32×32px .png or .ico recommended"
+      }
+    ]
+  },
+  {
+    "name": "Social sharing",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "social_sharing_image",
+        "label": "Default sharing image",
+        "info": "Used when pages don't have a featured image. Recommended: 1200×628px."
+      }
+    ]
+  },
+  {
+    "name": "Navigation",
+    "settings": [
+      { "type": "link_list", "id": "main_menu", "label": "Main menu", "default": "main-menu" },
+      { "type": "link_list", "id": "footer_menu", "label": "Footer menu", "default": "footer" }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          { "value": "drawer", "label": "Drawer (slide-in)" },
+          { "value": "page", "label": "Cart page" }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_free_shipping",
+        "label": "Show free shipping progress bar",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "Free shipping threshold ($)",
+        "default": 50
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_show_vendor",
+        "label": "Show vendor in cart items",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      { "type": "checkbox", "id": "card_show_vendor", "label": "Show vendor/brand", "default": true },
+      { "type": "checkbox", "id": "card_show_stars", "label": "Show star ratings", "default": true },
+      { "type": "checkbox", "id": "card_show_quick_add", "label": "Show Add to Cart button", "default": true },
+      { "type": "checkbox", "id": "card_show_wishlist", "label": "Show wishlist button", "default": true },
+      { "type": "checkbox", "id": "card_show_quick_view", "label": "Show Quick View button", "default": true },
+      {
+        "type": "select",
+        "id": "card_image_ratio",
+        "label": "Image aspect ratio",
+        "options": [
+          { "value": "1/1", "label": "Square (1:1)" },
+          { "value": "3/4", "label": "Portrait (3:4)" },
+          { "value": "4/3", "label": "Landscape (4:3)" }
+        ],
+        "default": "1/1"
+      },
+      {
+        "type": "select",
+        "id": "card_image_fit",
+        "label": "Image display",
+        "options": [
+          { "value": "contain", "label": "Contain (show full image)" },
+          { "value": "cover", "label": "Cover (fill the space)" }
+        ],
+        "default": "contain"
+      }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      { "type": "checkbox", "id": "search_predictive", "label": "Enable predictive search", "default": true },
+      {
+        "type": "range",
+        "id": "search_suggestions_count",
+        "min": 3, "max": 10, "step": 1,
+        "label": "Number of suggestions",
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "search_show_vendor",
+        "label": "Show vendor in search results",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Wishlist & Compare",
+    "settings": [
+      { "type": "checkbox", "id": "enable_wishlist", "label": "Enable wishlist", "default": true },
+      { "type": "checkbox", "id": "enable_compare", "label": "Enable product compare", "default": true },
+      {
+        "type": "range",
+        "id": "compare_max_items",
+        "min": 2, "max": 4, "step": 1,
+        "label": "Max items to compare",
+        "default": 3
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      { "type": "url", "id": "social_facebook", "label": "Facebook" },
+      { "type": "url", "id": "social_instagram", "label": "Instagram" },
+      { "type": "url", "id": "social_twitter", "label": "Twitter / X" },
+      { "type": "url", "id": "social_youtube", "label": "YouTube" },
+      { "type": "url", "id": "social_tiktok", "label": "TikTok" },
+      { "type": "url", "id": "social_pinterest", "label": "Pinterest" },
+      { "type": "url", "id": "social_linkedin", "label": "LinkedIn" }
+    ]
+  },
+  {
+    "name": "Animations",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_scroll_reveal",
+        "label": "Enable scroll reveal animations",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_hover_effects",
+        "label": "Enable card hover effects",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Checkout",
+    "settings": [
+      { "type": "image_picker", "id": "store_checkout_logo", "label": "Checkout logo", "info": "Recommended size: 180x50px" },
+      { "type": "color", "id": "checkout_accent", "label": "Checkout accent color", "default": "#FF9900" }
+    ]
+  }
+]

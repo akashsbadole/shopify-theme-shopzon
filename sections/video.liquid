@@ -1,0 +1,98 @@
+<section class="page-section" data-reveal>
+  <div class="page-container">
+    {% if section.settings.title != blank %}
+      <div style="text-align:{{ section.settings.text_align }};margin-bottom:var(--space-4)">
+        <h2 class="section-title">{{ section.settings.title }}</h2>
+        {% if section.settings.subtitle != blank %}
+          <p style="color:var(--color-text-secondary);font-size:var(--font-size-body);margin-top:8px">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="video-section" style="border-radius:var(--border-radius);overflow:hidden;background:#000;max-width:{{ section.settings.max_width }}px;margin:0 auto">
+      {% if section.settings.video_url != blank %}
+        {% if section.settings.video_url contains 'youtube' or section.settings.video_url contains 'youtu.be' %}
+          {% assign video_id = section.settings.video_url | split: 'v=' | last | split: '&' | first %}
+          {% if section.settings.video_url contains 'youtu.be' %}
+            {% assign video_id = section.settings.video_url | split: '/' | last | split: '?' | first %}
+          {% endif %}
+          <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden">
+            <iframe
+              src="https://www.youtube.com/embed/{{ video_id }}?rel=0{% if section.settings.autoplay %}&autoplay=1&mute=1{% endif %}"
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+              title="{{ section.settings.title }}"
+            ></iframe>
+          </div>
+        {% elsif section.settings.video_url contains 'vimeo' %}
+          {% assign video_id = section.settings.video_url | split: '/' | last %}
+          <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden">
+            <iframe
+              src="https://player.vimeo.com/video/{{ video_id }}?{% if section.settings.autoplay %}autoplay=1&muted=1&{% endif %}byline=0&portrait=0"
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"
+              allow="autoplay; fullscreen"
+              allowfullscreen
+              loading="lazy"
+              title="{{ section.settings.title }}"
+            ></iframe>
+          </div>
+        {% endif %}
+      {% elsif section.settings.video_file != blank %}
+        <div class="video-section" style="position:relative">
+          <video
+            {% if section.settings.autoplay %}autoplay muted loop{% endif %}
+            {% if section.settings.show_controls %}controls{% endif %}
+            playsinline
+            style="width:100%;display:block"
+            preload="metadata"
+          >
+            <source src="{{ section.settings.video_file }}" type="video/mp4">
+          </video>
+          {% unless section.settings.autoplay %}
+            <div class="video-section__poster">
+              {% if section.settings.poster_image %}
+                {{ section.settings.poster_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: section.settings.title, style: 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover' }}
+              {% endif %}
+              <div class="video-play-btn">
+                <span class="material-symbols-outlined">play_arrow</span>
+              </div>
+            </div>
+          {% endunless %}
+        </div>
+      {% else %}
+        <!-- Placeholder -->
+        <div style="aspect-ratio:16/9;background:linear-gradient(135deg,#232F3E,#37475A);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-3)">
+          <span class="material-symbols-outlined" style="font-size:56px;color:rgba(255,255,255,0.3)">play_circle</span>
+          <span style="color:rgba(255,255,255,0.4);font-size:13px">Add a YouTube, Vimeo URL or video file above</span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.caption != blank %}
+      <p style="text-align:center;font-size:13px;color:var(--color-text-secondary);margin-top:var(--space-3)">{{ section.settings.caption }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Video",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Section title" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle" },
+    { "type": "select", "id": "text_align", "label": "Text alignment", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }], "default": "center" },
+    { "type": "header", "content": "Video Source (choose one)" },
+    { "type": "url", "id": "video_url", "label": "YouTube or Vimeo URL", "info": "Paste a full YouTube or Vimeo URL" },
+    { "type": "text", "id": "video_file", "label": "Self-hosted video URL (.mp4)", "info": "Upload to Files in Shopify admin and paste URL" },
+    { "type": "image_picker", "id": "poster_image", "label": "Poster / thumbnail image" },
+    { "type": "header", "content": "Options" },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay (muted)", "default": false },
+    { "type": "checkbox", "id": "show_controls", "label": "Show video controls", "default": true },
+    { "type": "range", "id": "max_width", "min": 600, "max": 1400, "step": 50, "unit": "px", "label": "Max width", "default": 900 },
+    { "type": "text", "id": "caption", "label": "Caption text (optional)" }
+  ],
+  "presets": [{ "name": "Video" }]
+}
+{% endschema %}

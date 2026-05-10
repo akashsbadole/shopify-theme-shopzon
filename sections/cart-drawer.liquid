@@ -1,0 +1,25 @@
+<!-- Cart Overlay -->
+<div id="cart-overlay" class="mobile-overlay hidden" style="z-index:200"></div>
+
+<!-- Cart Drawer -->
+<div id="cart-drawer" class="cart-drawer hidden" aria-hidden="true" role="dialog" aria-label="Shopping cart">
+  <div class="cart-drawer__header">
+    <span class="cart-drawer__title">
+      <span class="material-symbols-outlined" style="font-size:20px;vertical-align:middle;margin-right:6px">shopping_cart</span>
+      Shopping Cart
+    </span>
+    <button id="cart-drawer-close" class="cart-drawer__close" aria-label="Close cart">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+
+  <div class="cart-drawer__body" id="cart-drawer-body">
+    <div class="cart-drawer__empty">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <p style="font-weight:600;margin-bottom:8px">Your cart is empty</p>
+      <p style="font-size:13px;color:var(--color-text-secondary)">Add items to get started</p>
+    </div>
+  </div>
+
+  <div class="cart-drawer__footer" id="cart-drawer-footer"></div>
+</div>

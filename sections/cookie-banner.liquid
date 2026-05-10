@@ -1,0 +1,42 @@
+{% if section.settings.enabled %}
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Cookie consent" aria-live="polite">
+  <div class="cookie-banner__text">
+    {% if section.settings.icon != blank %}
+      <span class="material-symbols-outlined" style="font-size:20px;vertical-align:middle;margin-right:6px">{{ section.settings.icon }}</span>
+    {% else %}
+      🍪
+    {% endif %}
+    {{ section.settings.text | default: 'We use cookies to enhance your experience. By continuing to browse, you agree to our use of cookies.' }}
+    {% if section.settings.policy_link != blank %}
+      <a href="{{ section.settings.policy_link }}">{{ section.settings.policy_text | default: 'Learn more' }}</a>
+    {% endif %}
+  </div>
+  <div class="cookie-banner__actions">
+    {% if section.settings.show_decline %}
+      <button id="cookie-decline" class="btn btn-ghost btn-sm" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3)">
+        {{ section.settings.decline_text | default: 'Decline' }}
+      </button>
+    {% endif %}
+    <button id="cookie-accept" class="btn btn-primary btn-sm">
+      {{ section.settings.accept_text | default: 'Accept All' }}
+    </button>
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Cookie Consent",
+  "settings": [
+    { "type": "checkbox", "id": "enabled", "label": "Show cookie banner", "default": true },
+    { "type": "text", "id": "icon", "label": "Material icon name (leave blank for 🍪)", "placeholder": "cookie" },
+    { "type": "textarea", "id": "text", "label": "Banner text", "default": "We use cookies to enhance your experience. By continuing to browse, you agree to our use of cookies." },
+    { "type": "url", "id": "policy_link", "label": "Privacy policy URL" },
+    { "type": "text", "id": "policy_text", "label": "Policy link text", "default": "Learn more" },
+    { "type": "text", "id": "accept_text", "label": "Accept button text", "default": "Accept All" },
+    { "type": "checkbox", "id": "show_decline", "label": "Show decline button", "default": true },
+    { "type": "text", "id": "decline_text", "label": "Decline button text", "default": "Decline" }
+  ],
+  "presets": [{ "name": "Cookie Consent" }]
+}
+{% endschema %}

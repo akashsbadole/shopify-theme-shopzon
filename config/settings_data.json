@@ -1,0 +1,25 @@
+{
+  "current": {
+    "header_bg_color": "#232F3E",
+    "header_nav_color": "#37475A",
+    "color_accent_primary": "#FF9900",
+    "color_accent_secondary": "#FEBD69",
+    "color_link": "#007185",
+    "color_body_bg": "#F3F3F3",
+    "color_text_primary": "#0F1111",
+    "page_max_width": 1500,
+    "page_gutter": 20,
+    "main_menu": "main-menu",
+    "footer_menu": "footer",
+    "cart_type": "drawer",
+    "cart_show_free_shipping": true,
+    "cart_free_shipping_threshold": 50,
+    "card_show_vendor": true,
+    "card_show_stars": true,
+    "card_show_quick_add": true,
+    "card_show_wishlist": true,
+    "card_image_ratio": "1/1",
+    "search_predictive": true,
+    "search_suggestions_count": 5
+  }
+}

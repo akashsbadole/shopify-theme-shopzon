@@ -1,0 +1,77 @@
+{% comment %} Search Results Template — OS 2.0 compliant {% endcomment %}
+
+{%- paginate search.results by 24 -%}
+<div class="page-container" style="padding-top:var(--space-4);padding-bottom:var(--space-10)">
+
+  <nav class="breadcrumb" aria-label="{{ 'general.breadcrumbs.aria_label' | t | default: 'Breadcrumb' }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    <span aria-current="page">{{ 'general.search.title' | t | default: 'Search' }}</span>
+  </nav>
+
+  <!-- Search Form -->
+  <div class="search-header">
+    <form action="{{ routes.search_url }}" method="get" class="search-form-inline" role="search">
+      <input type="hidden" name="type" value="product">
+      <span class="material-symbols-outlined" aria-hidden="true" style="color:var(--color-text-secondary);font-size:22px;flex-shrink:0">search</span>
+      <input
+        class="field-input"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'general.search.placeholder' | t | default: 'Search products...' }}"
+        autocomplete="off"
+        aria-label="{{ 'general.search.placeholder' | t | default: 'Search' }}"
+        autofocus
+        style="font-size:16px;border:none;box-shadow:none;padding:8px 4px"
+      >
+      <button type="submit" class="btn btn-primary" aria-label="{{ 'general.search.submit' | t | default: 'Search' }}">
+        {{ 'general.search.submit' | t | default: 'Search' }}
+      </button>
+    </form>
+  </div>
+
+  {%- if search.performed -%}
+    {%- if search.results_count == 0 -%}
+      <div style="text-align:center;padding:var(--space-12) var(--page-gutter)">
+        <span class="material-symbols-outlined" aria-hidden="true" style="font-size:64px;color:var(--color-border);display:block;margin-bottom:var(--space-4)">search_off</span>
+        <h2 style="font-size:21px;font-weight:700;margin-bottom:var(--space-2)">
+          {{ 'general.search.no_results' | t: terms: search.terms | default: 'No results' }}
+        </h2>
+        <p style="color:var(--color-text-secondary);margin-bottom:var(--space-5)">
+          {{ 'general.search.no_results_hint' | t | default: 'Check spelling or try a different term.' }}
+        </p>
+        <a href="{{ routes.root_url }}" class="btn btn-primary">{{ 'general.404.back_to_home' | t | default: 'Back to Home' }}</a>
+      </div>
+    {%- else -%}
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3);margin-bottom:var(--space-4)">
+        <p class="search-results-info" aria-live="polite">
+          {{ 'general.search.results_with_count' | t: terms: search.terms, count: search.results_count | default: search.results_count | append: ' results' }}
+        </p>
+      </div>
+
+      <div class="products-grid products-grid--4" aria-label="{{ 'general.search.results_label' | t | default: 'Search results' }}">
+        {%- for item in search.results -%}
+          {%- if item.object_type == 'product' -%}
+            {% render 'product-card', product: item %}
+          {%- else -%}
+            <div class="product-card" style="padding:var(--space-4)">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:var(--space-2)">{{ item.object_type | capitalize }}</div>
+              <h3 style="font-size:15px;font-weight:600;margin-bottom:var(--space-2)"><a href="{{ item.url }}">{{ item.title }}</a></h3>
+              <p style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:var(--space-2)">{{ item.content | strip_html | truncate: 100 }}</p>
+              <a href="{{ item.url }}" class="btn btn-outline btn-sm">{{ 'general.search.view_item' | t | default: 'View' }}</a>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {% render 'pagination', paginate: paginate %}
+    {%- endif -%}
+  {%- else -%}
+    <div style="text-align:center;padding:var(--space-12);color:var(--color-text-secondary)">
+      <span class="material-symbols-outlined" aria-hidden="true" style="font-size:64px;display:block;margin-bottom:var(--space-4);color:var(--color-border)">search</span>
+      <p style="font-size:16px;font-weight:500">{{ 'general.search.heading' | t | default: 'What are you looking for?' }}</p>
+    </div>
+  {%- endif -%}
+</div>
+{%- endpaginate -%}

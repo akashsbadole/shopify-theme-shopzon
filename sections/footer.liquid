@@ -1,0 +1,219 @@
+<footer class="site-footer" role="contentinfo">
+  <!-- Back to Top -->
+  <button id="back-to-top" class="footer-back-top" aria-label="Back to top">
+    Back to top
+  </button>
+
+  <!-- Main Footer -->
+  <div class="footer-main">
+    <div class="footer-main-inner">
+      {% for block in section.blocks %}
+        {% if block.type == 'menu' %}
+          <div class="footer-col" {{ block.shopify_attributes }}>
+            <h3 class="footer-col-title">{{ block.settings.heading }}</h3>
+            {% if block.settings.menu != blank %}
+              {% for link in linklists[block.settings.menu].links %}
+                <a href="{{ link.url }}" class="footer-link">{{ link.title }}</a>
+              {% endfor %}
+            {% endif %}
+          </div>
+        {% elsif block.type == 'text' %}
+          <div class="footer-col" {{ block.shopify_attributes }}>
+            <h3 class="footer-col-title">{{ block.settings.heading }}</h3>
+            <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6">{{ block.settings.content }}</div>
+          </div>
+        {% elsif block.type == 'newsletter' %}
+          <div class="footer-col" {{ block.shopify_attributes }}>
+            <h3 class="footer-col-title">{{ block.settings.heading | default: 'Stay in the loop' }}</h3>
+            <p style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">{{ block.settings.subtext | default: 'Get deals, new arrivals and more.' }}</p>
+            {% form 'customer', id: 'footer-newsletter-form' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div style="display:flex;gap:8px;flex-direction:column">
+                <input
+                  type="email"
+                  name="contact[email]"
+                  placeholder="Your email address"
+                  required
+                  style="padding:9px 12px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;background:rgba(255,255,255,0.1);color:#fff;font-size:13px;width:100%"
+                >
+                <button type="submit" class="btn btn-primary btn-sm" style="width:100%">Subscribe</button>
+              </div>
+              {% if form.posted_successfully? %}
+                <p style="color:#67e8a9;font-size:12px;margin-top:8px">✓ Thanks for subscribing!</p>
+              {% endif %}
+            {% endform %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      <!-- Default columns if no blocks -->
+      {% if section.blocks.size == 0 %}
+        <div class="footer-col">
+          <h3 class="footer-col-title">Get to Know Us</h3>
+          <a href="/pages/about" class="footer-link">About Us</a>
+          <a href="/blogs/news" class="footer-link">Blog</a>
+          <a href="/pages/careers" class="footer-link">Careers</a>
+          <a href="/pages/sustainability" class="footer-link">Sustainability</a>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">Customer Service</h3>
+          <a href="/pages/contact" class="footer-link">Contact Us</a>
+          <a href="/policies/refund-policy" class="footer-link">Returns &amp; Refunds</a>
+          <a href="/policies/shipping-policy" class="footer-link">Shipping Info</a>
+          <a href="/pages/faq" class="footer-link">FAQ</a>
+          <a href="/account/orders" class="footer-link">Track Order</a>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">Shop</h3>
+          <a href="/collections/all" class="footer-link">All Products</a>
+          <a href="/collections/new-arrivals" class="footer-link">New Arrivals</a>
+          <a href="/collections/deals" class="footer-link">Deals &amp; Offers</a>
+          <a href="/collections/best-sellers" class="footer-link">Best Sellers</a>
+          <a href="/pages/gift-cards" class="footer-link">Gift Cards</a>
+        </div>
+        <div class="footer-col">
+          <h3 class="footer-col-title">Stay Connected</h3>
+          <p style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">Subscribe for exclusive deals and updates.</p>
+          {% form 'customer', id: 'footer-newsletter-form-default' %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div style="display:flex;gap:8px;flex-direction:column">
+              <input type="email" name="contact[email]" placeholder="Your email" required style="padding:9px 12px;border:1px solid rgba(255,255,255,0.3);border-radius:4px;background:rgba(255,255,255,0.1);color:#fff;font-size:13px;width:100%">
+              <button type="submit" class="btn btn-primary btn-sm" style="width:100%">Subscribe</button>
+            </div>
+          {% endform %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <a href="{{ routes.root_url }}" class="footer-logo" style="text-decoration:none">
+        {{ shop.name | split: ' ' | first }}<span>{{ shop.name | split: ' ' | last }}</span>
+      </a>
+
+      <div class="footer-legal-links">
+        <a href="{{ shop.privacy_policy.url }}">Privacy Policy</a>
+        <a href="{{ shop.terms_of_service.url }}">Terms of Service</a>
+        <a href="{{ shop.refund_policy.url }}">Refund Policy</a>
+        <a href="{{ shop.shipping_policy.url }}">Shipping Policy</a>
+      </div>
+
+      <!-- Payment Icons -->
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag: class: 'payment-icon', style: 'height:22px;border-radius:3px;' }}
+        {% endfor %}
+      </div>
+
+      <!-- Social Links -->
+      {% if section.settings.social_facebook != blank or section.settings.social_instagram != blank or section.settings.social_twitter != blank %}
+        <div class="footer-social">
+          {% if section.settings.social_facebook != blank %}
+            <a href="{{ section.settings.social_facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
+              <span class="material-symbols-outlined">public</span>
+            </a>
+          {% endif %}
+          {% if section.settings.social_instagram != blank %}
+            <a href="{{ section.settings.social_instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
+              <span class="material-symbols-outlined">photo_camera</span>
+            </a>
+          {% endif %}
+          {% if section.settings.social_twitter != blank %}
+            <a href="{{ section.settings.social_twitter }}" target="_blank" rel="noopener" aria-label="Twitter / X">
+              <span class="material-symbols-outlined">alternate_email</span>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:rgba(255,255,255,0.4)">
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved. Powered by Shopify.
+    </p>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "social_facebook",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "text",
+      "id": "social_instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "text",
+      "id": "social_twitter",
+      "label": "Twitter / X URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading",
+          "default": "Quick Links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "About us"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content"
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Stay in the loop"
+        },
+        {
+          "type": "text",
+          "id": "subtext",
+          "label": "Subtext",
+          "default": "Get deals, new arrivals and exclusive offers."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,172 @@
+{% comment %} Contact Page Template {% endcomment %}
+
+<div class="page-container" style="padding-top:var(--space-4);padding-bottom:var(--space-10)">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Contact Us</span>
+  </nav>
+
+  <div class="contact-layout">
+
+    <!-- Left: Info -->
+    <div class="contact-info">
+      <h1 class="contact-info-title">We're here to help</h1>
+      <p>Have a question about your order, a product, or just want to say hello? Our team is ready to assist you. Reach out using any of the methods below.</p>
+
+      <div class="contact-method">
+        <span class="material-symbols-outlined">support_agent</span>
+        <div>
+          <div class="contact-method-title">Customer Support</div>
+          <div class="contact-method-text">
+            Available Monday – Friday, 9am – 6pm<br>
+            {% if section.settings.phone != blank %}
+              <a href="tel:{{ section.settings.phone }}">{{ section.settings.phone }}</a>
+            {% else %}
+              <a href="tel:+18005551234">+1 (800) 555-1234</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-method">
+        <span class="material-symbols-outlined">mail</span>
+        <div>
+          <div class="contact-method-title">Email Us</div>
+          <div class="contact-method-text">
+            We reply within 24 hours<br>
+            <a href="mailto:{{ section.settings.email | default: shop.email }}">{{ section.settings.email | default: shop.email }}</a>
+          </div>
+        </div>
+      </div>
+
+      {% if section.settings.address != blank %}
+        <div class="contact-method">
+          <span class="material-symbols-outlined">location_on</span>
+          <div>
+            <div class="contact-method-title">Our Location</div>
+            <div class="contact-method-text">{{ section.settings.address }}</div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="contact-method">
+        <span class="material-symbols-outlined">chat</span>
+        <div>
+          <div class="contact-method-title">Live Chat</div>
+          <div class="contact-method-text">Available on our website during business hours</div>
+        </div>
+      </div>
+
+      <!-- FAQ Callout -->
+      <div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--border-radius);padding:var(--space-4);margin-top:var(--space-5)">
+        <div style="display:flex;align-items:flex-start;gap:var(--space-3)">
+          <span class="material-symbols-outlined" style="color:var(--color-accent-orange);font-size:24px;flex-shrink:0">help</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:4px">Looking for quick answers?</div>
+            <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px">Check our FAQ for answers to common questions about shipping, returns, and more.</p>
+            <a href="/pages/faq" class="btn btn-ghost btn-sm">View FAQ</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social links -->
+      {% if section.settings.social_instagram != blank or section.settings.social_facebook != blank %}
+        <div style="margin-top:var(--space-5)">
+          <div style="font-size:14px;font-weight:700;margin-bottom:var(--space-2)">Follow us</div>
+          <div style="display:flex;gap:var(--space-3)">
+            {% if section.settings.social_instagram != blank %}
+              <a href="{{ section.settings.social_instagram }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                <span class="material-symbols-outlined" style="font-size:16px">photo_camera</span> Instagram
+              </a>
+            {% endif %}
+            {% if section.settings.social_facebook != blank %}
+              <a href="{{ section.settings.social_facebook }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                <span class="material-symbols-outlined" style="font-size:16px">public</span> Facebook
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Form -->
+    <div class="contact-form-card">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:var(--space-5)">Send us a message</h2>
+
+      {% form 'contact' %}
+        {% if form.posted_successfully? %}
+          <div style="background:#d1fae5;border:1px solid #067D62;border-radius:var(--border-radius);padding:var(--space-4);text-align:center;margin-bottom:var(--space-4)">
+            <span class="material-symbols-outlined" style="color:#067D62;font-size:36px;display:block;margin-bottom:8px">check_circle</span>
+            <div style="font-size:16px;font-weight:700;color:#065f46;margin-bottom:4px">Message sent!</div>
+            <div style="font-size:13px;color:#047857">Thanks for reaching out. We'll get back to you within 24 hours.</div>
+          </div>
+        {% endif %}
+
+        {% if form.errors %}
+          <div style="background:#fee2e2;border:1px solid var(--color-error);border-radius:var(--border-radius);padding:var(--space-3);margin-bottom:var(--space-4);font-size:13px;color:var(--color-error)">
+            <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle">error</span>
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div class="form-row form-row--2" style="margin-bottom:var(--space-4)">
+          <div class="field">
+            <label class="field-label" for="contact-first-name">First name <span>*</span></label>
+            <input class="field-input" type="text" name="contact[first_name]" id="contact-first-name" autocomplete="given-name" placeholder="First name" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="contact-last-name">Last name</label>
+            <input class="field-input" type="text" name="contact[last_name]" id="contact-last-name" autocomplete="family-name" placeholder="Last name">
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:var(--space-4)">
+          <label class="field-label" for="contact-email">Email address <span>*</span></label>
+          <input class="field-input" type="email" name="contact[email]" id="contact-email" autocomplete="email" placeholder="you@example.com" value="{{ form.email }}" required>
+        </div>
+
+        <div class="field" style="margin-bottom:var(--space-4)">
+          <label class="field-label" for="contact-phone">Phone number</label>
+          <input class="field-input" type="tel" name="contact[phone]" id="contact-phone" autocomplete="tel" placeholder="+1 (555) 000-0000">
+        </div>
+
+        <div class="field" style="margin-bottom:var(--space-4)">
+          <label class="field-label" for="contact-order">Order number (if applicable)</label>
+          <input class="field-input" type="text" name="contact[order_number]" id="contact-order" placeholder="#1234">
+        </div>
+
+        <div class="field" style="margin-bottom:var(--space-4)">
+          <label class="field-label" for="contact-subject">Subject <span>*</span></label>
+          <select class="field-input" name="contact[subject]" id="contact-subject" required>
+            <option value="">— Select a topic —</option>
+            <option value="order">Order inquiry</option>
+            <option value="shipping">Shipping & delivery</option>
+            <option value="return">Return or refund</option>
+            <option value="product">Product question</option>
+            <option value="account">Account issue</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="field" style="margin-bottom:var(--space-5)">
+          <label class="field-label" for="contact-body">Message <span>*</span></label>
+          <textarea class="field-input" name="contact[body]" id="contact-body" rows="5" placeholder="Tell us how we can help you..." required>{{ form.body }}</textarea>
+          <span class="field-hint">Please provide as much detail as possible so we can assist you quickly.</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg">
+          <span class="material-symbols-outlined" style="font-size:18px">send</span>
+          Send Message
+        </button>
+
+        <p style="font-size:12px;color:var(--color-text-secondary);text-align:center;margin-top:var(--space-3)">
+          We typically respond within 24 business hours
+        </p>
+      {% endform %}
+    </div>
+  </div>
+</div>
+

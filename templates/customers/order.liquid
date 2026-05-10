@@ -1,0 +1,134 @@
+{% comment %} Customer Order Detail Template {% endcomment %}
+
+<div class="page-container" style="padding-top:var(--space-4);padding-bottom:var(--space-10)">
+  <nav class="breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="{{ routes.account_url }}">Account</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Order {{ order.name }}</span>
+  </nav>
+
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:var(--space-5);align-items:start">
+
+    <!-- Order Items -->
+    <div>
+      <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden;margin-bottom:var(--space-4)">
+        <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-2)">
+          <div>
+            <h1 style="font-size:18px;font-weight:700">Order {{ order.name }}</h1>
+            <p style="font-size:13px;color:var(--color-text-secondary);margin-top:2px">Placed on {{ order.created_at | date: '%B %-d, %Y at %I:%M %p' }}</p>
+          </div>
+          <div style="display:flex;gap:var(--space-2)">
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700;
+              {% if order.financial_status == 'paid' %}background:#d1fae5;color:#065f46
+              {% elsif order.financial_status == 'pending' %}background:#fef3c7;color:#92400e
+              {% elsif order.financial_status == 'refunded' %}background:#fee2e2;color:#991b1b
+              {% else %}background:var(--color-surface);color:var(--color-text-secondary){% endif %}">
+              {{ order.financial_status | replace: '_', ' ' | capitalize }}
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700;
+              {% if order.fulfillment_status == 'fulfilled' %}background:#d1fae5;color:#065f46
+              {% elsif order.fulfillment_status == 'partial' %}background:#fef3c7;color:#92400e
+              {% else %}background:var(--color-surface);color:var(--color-text-secondary){% endif %}">
+              {{ order.fulfillment_status | replace: '_', ' ' | capitalize | default: 'Unfulfilled' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        {% for line_item in order.line_items %}
+          <div style="display:grid;grid-template-columns:80px 1fr auto;gap:var(--space-4);padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);align-items:center">
+            <div style="background:var(--color-surface);border-radius:var(--border-radius);overflow:hidden;aspect-ratio:1">
+              {% if line_item.image %}
+                {{ line_item.image | image_url: width: 160 | image_tag: loading: 'lazy', alt: line_item.title, style: 'width:100%;height:100%;object-fit:contain;padding:6px' }}
+              {% else %}
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
+                  <span class="material-symbols-outlined" style="color:var(--color-border);font-size:32px">inventory_2</span>
+                </div>
+              {% endif %}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <a href="{{ line_item.product.url }}" style="font-size:14px;font-weight:600;color:var(--color-text-primary)">{{ line_item.title }}</a>
+              {% unless line_item.variant.title == 'Default Title' %}
+                <div style="font-size:12px;color:var(--color-text-secondary)">{{ line_item.variant.title }}</div>
+              {% endunless %}
+              <div style="font-size:12px;color:var(--color-text-secondary)">Qty: {{ line_item.quantity }}</div>
+              {% if line_item.fulfillment %}
+                <div style="font-size:12px;color:var(--color-success);display:flex;align-items:center;gap:4px">
+                  <span class="material-symbols-outlined" style="font-size:14px">local_shipping</span>
+                  Fulfilled on {{ line_item.fulfillment.created_at | date: '%b %-d, %Y' }}
+                  {% if line_item.fulfillment.tracking_url %}
+                    · <a href="{{ line_item.fulfillment.tracking_url }}" target="_blank" style="color:var(--color-link)">Track package</a>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+            <div style="font-size:15px;font-weight:700;text-align:right;white-space:nowrap">
+              {{ line_item.final_line_price | money }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Shipping Address -->
+      {% if order.shipping_address %}
+        <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);padding:var(--space-4) var(--space-5)">
+          <h2 style="font-size:16px;font-weight:700;margin-bottom:var(--space-3)">Shipping Address</h2>
+          <address style="font-style:normal;font-size:14px;line-height:1.8;color:var(--color-text-secondary)">
+            {{ order.shipping_address.name }}<br>
+            {% if order.shipping_address.company != blank %}{{ order.shipping_address.company }}<br>{% endif %}
+            {{ order.shipping_address.address1 }}<br>
+            {% if order.shipping_address.address2 != blank %}{{ order.shipping_address.address2 }}<br>{% endif %}
+            {{ order.shipping_address.city }}, {{ order.shipping_address.province_code }} {{ order.shipping_address.zip }}<br>
+            {{ order.shipping_address.country }}
+          </address>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Order Summary Sidebar -->
+    <div style="position:sticky;top:var(--space-4)">
+      <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);padding:var(--space-4)">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:var(--space-4)">Order Summary</h2>
+
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--color-text-secondary)">Subtotal</span>
+            <span>{{ order.subtotal_price | money }}</span>
+          </div>
+          {% for discount in order.discounts %}
+            <div style="display:flex;justify-content:space-between">
+              <span style="color:var(--color-badge-sale)">Discount ({{ discount.code }})</span>
+              <span style="color:var(--color-badge-sale)">−{{ discount.savings | money }}</span>
+            </div>
+          {% endfor %}
+          {% for shipping_method in order.shipping_methods %}
+            <div style="display:flex;justify-content:space-between">
+              <span style="color:var(--color-text-secondary)">{{ shipping_method.title }}</span>
+              <span>{{ shipping_method.price | money }}</span>
+            </div>
+          {% endfor %}
+          {% for tax_line in order.tax_lines %}
+            <div style="display:flex;justify-content:space-between">
+              <span style="color:var(--color-text-secondary)">{{ tax_line.title }} ({{ tax_line.rate | times: 100 }}%)</span>
+              <span>{{ tax_line.price | money }}</span>
+            </div>
+          {% endfor %}
+          <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;padding-top:10px;border-top:1px solid var(--color-divider)">
+            <span>Total</span>
+            <span>{{ order.total_price | money }}</span>
+          </div>
+        </div>
+
+        <div style="margin-top:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
+          <a href="{{ routes.account_url }}" class="btn btn-ghost btn-full" style="text-align:center">
+            <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+            Back to Account
+          </a>
+          <a href="{{ routes.root_url }}" class="btn btn-primary btn-full" style="text-align:center">Shop Again</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

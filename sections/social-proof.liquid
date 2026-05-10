@@ -1,0 +1,51 @@
+{% if section.settings.enabled %}
+<div
+  id="social-proof-container"
+  data-events='[
+    {% for block in section.blocks %}
+      {% if block.type == "purchase_event" %}
+        {
+          "name": {{ block.settings.name | json }},
+          "action": {{ block.settings.action | json }},
+          "product": {{ block.settings.product | json }},
+          "image": {{ block.settings.image | json }},
+          "time": {{ block.settings.time | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {% endif %}
+    {% endfor %}
+  ]'
+  style="position:fixed;bottom:var(--space-5);left:var(--space-5);z-index:300;max-width:280px"
+></div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Social Proof Popups",
+  "settings": [
+    { "type": "checkbox", "id": "enabled", "label": "Enable social proof popups", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "purchase_event",
+      "name": "Purchase Event",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Customer name", "default": "Someone in New York" },
+        { "type": "text", "id": "action", "label": "Action text", "default": "just purchased Premium Headphones" },
+        { "type": "text", "id": "product", "label": "Product name" },
+        { "type": "text", "id": "image", "label": "Product image URL" },
+        { "type": "text", "id": "time", "label": "Time label", "default": "2 minutes ago" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social Proof Popups",
+      "blocks": [
+        { "type": "purchase_event", "settings": { "name": "Sarah from New York", "action": "just purchased Wireless Headphones", "time": "2 mins ago" } },
+        { "type": "purchase_event", "settings": { "name": "James from London", "action": "just purchased Smart Watch", "time": "5 mins ago" } },
+        { "type": "purchase_event", "settings": { "name": "Priya from Toronto", "action": "added Running Shoes to cart", "time": "8 mins ago" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

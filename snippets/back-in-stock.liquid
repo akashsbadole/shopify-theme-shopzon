@@ -1,0 +1,52 @@
+{% comment %}
+  Back in Stock form snippet.
+  Usage: {% render 'back-in-stock', variant: variant %}
+  Connect to a back-in-stock app (Klaviyo, Back in Stock by Swym, etc.) for full functionality.
+{% endcomment %}
+
+<div class="back-in-stock" id="back-in-stock-{{ variant.id }}">
+  <div class="back-in-stock__title">
+    <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;color:var(--color-accent-orange)">notifications</span>
+    Notify Me When Available
+  </div>
+  <p class="back-in-stock__text">Enter your email and we'll let you know the moment this item is back in stock.</p>
+
+  <form class="back-in-stock__form" id="bis-form-{{ variant.id }}"
+    onsubmit="submitBackInStock(event, '{{ variant.id }}', '{{ product.title | escape }}')"
+  >
+    <input
+      type="email"
+      name="email"
+      class="field-input"
+      placeholder="your@email.com"
+      required
+      style="font-size:13px;padding:8px 12px"
+    >
+    <button type="submit" class="btn btn-primary btn-sm">Notify Me</button>
+  </form>
+
+  <div id="bis-success-{{ variant.id }}" style="display:none;color:var(--color-success);font-size:13px;margin-top:8px;display:flex;align-items:center;gap:6px">
+    <span class="material-symbols-outlined" style="font-size:16px">check_circle</span>
+    You're on the list! We'll email you when it's back.
+  </div>
+</div>
+
+<script>
+function submitBackInStock(e, variantId, productTitle) {
+  e.preventDefault();
+  const form = e.target;
+  const email = form.querySelector('[type=email]').value;
+  // In production: send to your back-in-stock app API
+  // e.g. Klaviyo, Swym, etc.
+  // For demo: show success message
+  form.style.display = 'none';
+  const success = document.getElementById('bis-success-' + variantId);
+  if (success) { success.style.display = 'flex'; }
+  // Example Klaviyo integration:
+  // fetch('https://a.klaviyo.com/onsite/components/back-in-stock/subscribe', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ a: 'YOUR_PUBLIC_KEY', email, variant: variantId, platform: 'shopify' })
+  // });
+}
+</script>

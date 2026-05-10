@@ -1,0 +1,53 @@
+{% if section.settings.enabled %}
+<div id="age-gate" class="age-gate-overlay" role="dialog" aria-modal="true" aria-label="Age verification">
+  <div class="age-gate-card">
+    {% if section.settings.logo != blank %}
+      {{ section.settings.logo | image_url: width: 200 | image_tag: loading: 'eager', alt: shop.name, style: 'max-height:60px;object-fit:contain;margin:0 auto var(--space-4)' }}
+    {% else %}
+      <div style="font-size:24px;font-weight:800;color:var(--color-nav-dark);margin-bottom:var(--space-4)">
+        {{ shop.name }}
+      </div>
+    {% endif %}
+
+    <div style="font-size:42px;margin-bottom:var(--space-3)">{{ section.settings.emoji | default: '🔞' }}</div>
+    <h2>{{ section.settings.title | default: 'Age Verification Required' }}</h2>
+    <p>{{ section.settings.text | default: 'You must be 18 years of age or older to enter this site. Please confirm your age.' }}</p>
+
+    <div class="age-gate-actions">
+      <button id="age-confirm" class="btn btn-primary btn-lg">
+        {{ section.settings.confirm_text | default: 'Yes, I am 18+' }}
+      </button>
+      <button id="age-deny" class="btn btn-ghost btn-lg">
+        {{ section.settings.deny_text | default: 'No, I am under 18' }}
+      </button>
+    </div>
+
+    {% if section.settings.terms_text != blank %}
+      <p style="font-size:11px;color:var(--color-text-muted);margin-top:var(--space-4);line-height:1.5">
+        {{ section.settings.terms_text }}
+        {% if section.settings.terms_url != blank %}
+          <a href="{{ section.settings.terms_url }}" style="color:var(--color-link)">Terms of Service</a>
+        {% endif %}
+      </p>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Age Gate",
+  "settings": [
+    { "type": "checkbox", "id": "enabled", "label": "Enable age gate", "default": false },
+    { "type": "image_picker", "id": "logo", "label": "Logo image" },
+    { "type": "text", "id": "emoji", "label": "Emoji icon", "default": "🔞" },
+    { "type": "text", "id": "title", "label": "Title", "default": "Age Verification Required" },
+    { "type": "textarea", "id": "text", "label": "Description", "default": "You must be 18 years of age or older to enter this site." },
+    { "type": "text", "id": "confirm_text", "label": "Confirm button", "default": "Yes, I am 18+" },
+    { "type": "text", "id": "deny_text", "label": "Deny button", "default": "No, I am under 18" },
+    { "type": "textarea", "id": "terms_text", "label": "Terms notice" },
+    { "type": "url", "id": "terms_url", "label": "Terms page URL" }
+  ],
+  "presets": [{ "name": "Age Gate" }]
+}
+{% endschema %}

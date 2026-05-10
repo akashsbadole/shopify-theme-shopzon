@@ -1,0 +1,187 @@
+{% comment %} Collection Template — OS 2.0 / ThemeForest / Shopify Theme Store compliant {% endcomment %}
+
+{%- paginate collection.products by section.settings.products_per_page -%}
+
+<div class="page-container" style="padding-top:var(--space-3);padding-bottom:var(--space-8)">
+
+  <!-- Breadcrumb (SEO) -->
+  <nav class="breadcrumb" aria-label="{{ 'general.breadcrumbs.aria_label' | t | default: 'Breadcrumb' }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    <span aria-current="page">{{ collection.title }}</span>
+  </nav>
+
+  <!-- Collection Header -->
+  <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);padding:var(--space-4) var(--space-5);margin-bottom:var(--space-3)">
+    <h1 style="font-size:var(--font-size-xl);font-weight:700;margin-bottom:4px">{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+      <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);max-width:640px;line-height:1.6">
+        {{ collection.description }}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="collection-layout">
+
+    <!-- Faceted Filters Sidebar -->
+    <aside class="collection-sidebar" id="collection-sidebar" aria-label="{{ 'collections.filtering.title' | t | default: 'Filters' }}">
+      <div style="font-size:var(--font-size-md);font-weight:700;margin-bottom:var(--space-4);display:flex;align-items:center;justify-content:space-between">
+        <span>{{ 'collections.filtering.title' | t | default: 'Filters' }}</span>
+        {%- if collection.active_filters.size > 0 -%}
+          <a href="{{ collection.url }}" style="font-size:12px;color:var(--color-link);font-weight:400">
+            {{ 'collections.filtering.clear_all' | t | default: 'Clear all' }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <!-- OS 2.0 Faceted Filters (Requirement #4) -->
+      {% render 'faceted-filters', results: collection, section: section %}
+    </aside>
+
+    <!-- Main Content -->
+    <div class="collection-main">
+      <!-- Toolbar -->
+      <div class="collection-toolbar">
+        <div style="display:flex;align-items:center;gap:var(--space-3)">
+          <button
+            id="filter-toggle"
+            class="btn btn-ghost btn-sm"
+            style="display:none"
+            aria-expanded="false"
+            aria-controls="collection-sidebar"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">tune</span>
+            {{ 'collections.filtering.title' | t | default: 'Filters' }}
+          </button>
+          <p class="collection-count" aria-live="polite">
+            {%- if collection.products_count == 1 -%}
+              {{ 'collections.general.items_with_count.one' | t: count: collection.products_count | default: '1 product' }}
+            {%- else -%}
+              {{ 'collections.general.items_with_count.other' | t: count: collection.products_count | default: collection.products_count | append: ' products' }}
+            {%- endif -%}
+          </p>
+        </div>
+
+        <div class="collection-sort">
+          <label for="sort-select" class="sr-only">{{ 'collections.sorting.title' | t | default: 'Sort' }}</label>
+          <select
+            id="sort-select"
+            class="field-input"
+            aria-label="{{ 'collections.sorting.title' | t | default: 'Sort by' }}"
+            style="padding:4px 28px 4px 8px;font-size:13px"
+          >
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+                {{ option.name }}
+              </option>
+            {%- endfor -%}
+          </select>
+          <!-- Grid layout toggle -->
+          <div style="display:flex;gap:4px;margin-left:var(--space-2)" role="group" aria-label="View as">
+            <button
+              id="grid-view-btn"
+              title="{{ 'collections.general.grid_view' | t | default: 'Grid view' }}"
+              aria-pressed="true"
+              style="padding:4px 8px;border:1px solid var(--color-border);border-radius:var(--border-radius);background:var(--color-nav-dark);color:#fff;cursor:pointer"
+              onclick="setGridView(true,this)"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">grid_view</span>
+            </button>
+            <button
+              id="list-view-btn"
+              title="{{ 'collections.general.list_view' | t | default: 'List view' }}"
+              aria-pressed="false"
+              style="padding:4px 8px;border:1px solid var(--color-border);border-radius:var(--border-radius);background:var(--color-surface-white);cursor:pointer"
+              onclick="setGridView(false,this)"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px">view_list</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div
+        id="ProductGrid"
+        class="products-grid products-grid--{{ section.settings.columns_desktop }}"
+        aria-live="polite"
+        aria-label="{{ 'collections.general.collection_products_label' | t: title: collection.title | default: collection.title }}"
+      >
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product %}
+        {%- else -%}
+          <div style="grid-column:1/-1;text-align:center;padding:var(--space-12);color:var(--color-text-secondary)">
+            <span class="material-symbols-outlined" aria-hidden="true" style="font-size:64px;display:block;margin-bottom:var(--space-4)">search_off</span>
+            <p style="font-size:var(--font-size-md);font-weight:600;margin-bottom:8px">
+              {{ 'collections.general.no_matches' | t | default: 'No products found' }}
+            </p>
+            <p style="font-size:var(--font-size-sm)">
+              {{ 'collections.filtering.no_results_cta_html' | t: link: collection.url | default: 'Try removing some filters.' }}
+            </p>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <!-- Pagination -->
+      {%- if paginate.pages > 1 -%}
+        {% render 'pagination', paginate: paginate %}
+      {%- endif -%}
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Sort select → URL
+  document.getElementById('sort-select')?.addEventListener('change', function() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort_by', this.value);
+    window.location.href = url.toString();
+  });
+
+  // Filter toggle (mobile)
+  document.getElementById('filter-toggle')?.addEventListener('click', function() {
+    const sidebar = document.getElementById('collection-sidebar');
+    const isOpen = sidebar.classList.toggle('open');
+    this.setAttribute('aria-expanded', isOpen);
+  });
+
+  // Grid/list view toggle
+  function setGridView(isGrid, btn) {
+    const grid = document.getElementById('ProductGrid');
+    const cols = {{ section.settings.columns_desktop }};
+    grid.className = 'products-grid products-grid--' + (isGrid ? cols : 1);
+    if (!isGrid) {
+      grid.querySelectorAll('.product-card').forEach(card => {
+        card.style.display = 'grid';
+        card.style.gridTemplateColumns = '160px 1fr';
+        card.style.gap = '16px';
+      });
+    } else {
+      grid.querySelectorAll('.product-card').forEach(card => {
+        card.style.display = '';
+        card.style.gridTemplateColumns = '';
+        card.style.gap = '';
+      });
+    }
+    document.querySelectorAll('[aria-pressed]').forEach(b => b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+    btn.style.background = 'var(--color-nav-dark)';
+    btn.style.color = '#fff';
+    const other = isGrid ? document.getElementById('list-view-btn') : document.getElementById('grid-view-btn');
+    if (other) { other.style.background = ''; other.style.color = ''; }
+  }
+</script>
+
+<style>
+  @media (max-width:1024px) {
+    #filter-toggle { display:flex !important; }
+    .collection-layout { grid-template-columns:1fr !important; }
+    .collection-sidebar { display:none; }
+    .collection-sidebar.open { display:block; }
+  }
+</style>
+
+{%- endpaginate -%}
+
+

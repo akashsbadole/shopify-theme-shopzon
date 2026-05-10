@@ -1,0 +1,114 @@
+{% comment %}
+  Faceted Search / Filter Snippet — Required by Shopify Theme Store (Requirement #4)
+  Renders storefront filtering for collections and search.
+  Usage: {% render 'faceted-filters', results: collection, section: section %}
+{% endcomment %}
+
+{% assign sort_by = results.sort_by | default: results.default_sort_by %}
+{% assign filters = results.filters %}
+
+{%- if filters.size > 0 -%}
+  <form id="FacetFiltersForm" class="facet-filters-form" data-section-id="{{ section.id }}">
+    {%- for filter in filters -%}
+      {%- case filter.type -%}
+
+      {%- when 'boolean', 'list' -%}
+        <div class="filter-group">
+          <div class="filter-group-title">{{ filter.label }}</div>
+          {%- for filter_value in filter.values -%}
+            <label class="filter-option" for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+              <input
+                type="checkbox"
+                id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                name="{{ filter.param_name }}"
+                value="{{ filter_value.value }}"
+                {% if filter_value.active %}checked{% endif %}
+                {% if filter_value.count == 0 and filter_value.active == false %}disabled{% endif %}
+              >
+              <span>{{ filter_value.label }}</span>
+              <span class="filter-count">({{ filter_value.count }})</span>
+            </label>
+          {%- endfor -%}
+
+          {%- if filter.active_values.size > 0 -%}
+            <a href="{{ filter.url_to_remove }}" class="filter-clear-link" style="font-size:11px;color:var(--color-link);display:block;margin-top:6px">
+              Clear {{ filter.label }}
+            </a>
+          {%- endif -%}
+        </div>
+
+      {%- when 'price_range' -%}
+        <div class="filter-group">
+          <div class="filter-group-title">{{ filter.label }}</div>
+          <div class="filter-price-range">
+            <input
+              class="filter-price-input field-input"
+              name="{{ filter.min_value.param_name }}"
+              id="Filter-{{ filter.min_value.param_name }}"
+              {%- if filter.min_value.value -%}value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"{%- endif -%}
+              type="number"
+              placeholder="0"
+              min="0"
+              max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+              aria-label="{{ 'collections.filtering.from' | t }}"
+            >
+            <span aria-hidden="true">–</span>
+            <input
+              class="filter-price-input field-input"
+              name="{{ filter.max_value.param_name }}"
+              id="Filter-{{ filter.max_value.param_name }}"
+              {%- if filter.max_value.value -%}value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"{%- endif -%}
+              type="number"
+              placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+              min="0"
+              max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+              aria-label="{{ 'collections.filtering.to' | t }}"
+            >
+          </div>
+          <button type="submit" class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px">Apply</button>
+        </div>
+
+      {%- endcase -%}
+    {%- endfor -%}
+
+    <!-- Sort (required on collection pages) -->
+    <div class="filter-group">
+      <div class="filter-group-title">Sort By</div>
+      <select
+        name="sort_by"
+        class="field-input"
+        id="SortBy"
+        aria-label="{{ 'collections.sorting.title' | t }}"
+        style="font-size:13px"
+        onchange="this.form.submit()"
+      >
+        {%- assign sort_options = results.sort_options -%}
+        {%- for option in sort_options -%}
+          <option
+            value="{{ option.value | escape }}"
+            {% if option.value == sort_by %}selected="selected"{% endif %}
+          >
+            {{ option.name }}
+          </option>
+        {%- endfor -%}
+      </select>
+    </div>
+
+    <!-- Active filters summary -->
+    {%- if results.active_filters.size > 0 -%}
+      <div class="filter-group">
+        <div class="filter-group-title">Active Filters</div>
+        {%- for filter in results.active_filters -%}
+          <a href="{{ filter.url_to_remove }}" class="active-filter-tag" style="display:inline-flex;align-items:center;gap:4px;background:var(--color-nav-dark);color:#fff;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600;text-decoration:none;margin:2px">
+            {{ filter.label }}: {{ filter.value.label }}
+            <span class="material-symbols-outlined" aria-hidden="true" style="font-size:12px">close</span>
+          </a>
+        {%- endfor -%}
+        <a href="{{ results.url }}" style="display:block;font-size:12px;color:var(--color-link);margin-top:8px">Clear all</a>
+      </div>
+    {%- endif -%}
+
+    <!-- Hidden sort/filter fields to preserve state -->
+    <input type="hidden" name="sort_by" value="{{ sort_by }}">
+  </form>
+{%- endif -%}

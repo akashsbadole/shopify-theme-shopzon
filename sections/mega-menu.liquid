@@ -1,0 +1,115 @@
+{% comment %} Mega Menu Section — renders inside header nav {% endcomment %}
+{% comment %} Usage: included automatically by header when mega menu blocks exist {% endcomment %}
+
+<div class="mega-menu" id="mega-menu-{{ section.id }}" role="navigation" aria-label="Mega menu">
+  <div class="mega-menu__inner" style="grid-template-columns: repeat({{ section.settings.columns }}, 1fr){% if section.settings.show_promo %} 220px{% endif %}">
+
+    {% for block in section.blocks %}
+      {% if block.type == 'column' %}
+        <div {{ block.shopify_attributes }}>
+          {% if block.settings.heading != blank %}
+            <div class="mega-menu__col-title">{{ block.settings.heading }}</div>
+          {% endif %}
+          {% if block.settings.menu != blank %}
+            {% for link in linklists[block.settings.menu].links %}
+              <a href="{{ link.url }}" class="mega-menu__link">{{ link.title }}</a>
+            {% endfor %}
+          {% endif %}
+          {% if block.settings.extra_links != blank %}
+            {% assign extra = block.settings.extra_links | newline_to_br | split: '<br />' %}
+            {% for line in extra %}
+              {% assign parts = line | strip | split: '|' %}
+              {% if parts.size == 2 %}
+                <a href="{{ parts[1] | strip }}" class="mega-menu__link">{{ parts[0] | strip }}</a>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
+      {% elsif block.type == 'featured_product' %}
+        {% assign fp = all_products[block.settings.product] %}
+        {% if fp != blank %}
+          <div {{ block.shopify_attributes }}>
+            {% if block.settings.heading != blank %}
+              <div class="mega-menu__col-title">{{ block.settings.heading }}</div>
+            {% endif %}
+            <a href="{{ fp.url }}" style="display:block;text-decoration:none;color:var(--color-text-primary)">
+              {% if fp.featured_image %}
+                {{ fp.featured_image | image_url: width: 300 | image_tag: loading: 'lazy', alt: fp.title, style: 'width:100%;border-radius:4px;border:1px solid var(--color-border);margin-bottom:8px' }}
+              {% endif %}
+              <div style="font-size:13px;font-weight:600">{{ fp.title | truncate: 40 }}</div>
+              <div style="font-size:13px;color:var(--color-price);margin-top:2px">{{ fp.price | money }}</div>
+            </a>
+          </div>
+        {% endif %}
+
+      {% elsif block.type == 'promo_image' %}
+        <div {{ block.shopify_attributes }}>
+          {% if block.settings.heading != blank %}
+            <div class="mega-menu__col-title">{{ block.settings.heading }}</div>
+          {% endif %}
+          <a href="{{ block.settings.url | default: '#' }}" class="mega-menu__promo" style="display:block;text-decoration:none">
+            {% if block.settings.image %}
+              {{ block.settings.image | image_url: width: 440 | image_tag: loading: 'lazy', alt: block.settings.label, style: 'width:100%;height:140px;object-fit:cover;border-radius:4px' }}
+            {% else %}
+              <div style="width:100%;height:140px;background:linear-gradient(135deg,#232F3E,#37475A);border-radius:4px;display:flex;align-items:center;justify-content:center">
+                <span class="material-symbols-outlined" style="font-size:36px;color:rgba(255,255,255,0.3)">image</span>
+              </div>
+            {% endif %}
+            {% if block.settings.label != blank %}
+              <div class="mega-menu__promo-label" style="color:var(--color-text-primary)">{{ block.settings.label }}</div>
+            {% endif %}
+            {% if block.settings.badge != blank %}
+              <span style="display:inline-block;background:var(--color-accent-orange);color:#131921;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:4px">{{ block.settings.badge }}</span>
+            {% endif %}
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Mega Menu",
+  "settings": [
+    { "type": "range", "id": "columns", "min": 2, "max": 5, "step": 1, "label": "Link columns", "default": 3 },
+    { "type": "checkbox", "id": "show_promo", "label": "Include promo image column", "default": true },
+    { "type": "text", "id": "trigger_link", "label": "Nav link title that triggers this menu", "info": "Must match a link title in your main menu exactly" }
+  ],
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Link Column",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Column heading" },
+        { "type": "link_list", "id": "menu", "label": "Menu" },
+        { "type": "textarea", "id": "extra_links", "label": "Extra links", "info": "One per line: Label | /url" }
+      ]
+    },
+    {
+      "type": "promo_image",
+      "name": "Promo Image",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "label", "label": "Image label" },
+        { "type": "text", "id": "badge", "label": "Badge text (e.g. SALE)" },
+        { "type": "url", "id": "url", "label": "Link URL" }
+      ]
+    },
+    {
+      "type": "featured_product",
+      "name": "Featured Product",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Featured" },
+        { "type": "product", "id": "product", "label": "Product" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Mega Menu" }]
+}
+{% endschema %}

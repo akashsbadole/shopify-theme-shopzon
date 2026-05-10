@@ -1,0 +1,35 @@
+{% comment %}
+  Responsive Image Snippet — Requirement #17 (image focal points)
+  Usage: {% render 'responsive-image', image: image, widths: '360,540,720,960,1200', sizes: '100vw', class: '', loading: 'lazy', alt: '' %}
+{% endcomment %}
+
+{%- liquid
+  assign loading = loading | default: 'lazy'
+  assign widths = widths | default: '375,550,750,1100,1500'
+  assign sizes = sizes | default: '(min-width: 1200px) 50vw, 100vw'
+  assign alt_text = alt | default: image.alt | default: ''
+  assign class_names = class | default: ''
+  assign focal_point = image.presentation.focal_point | default: 'center center'
+-%}
+
+{%- if image != blank -%}
+  {{
+    image
+    | image_url: width: 1500
+    | image_tag:
+      loading: loading,
+      class: class_names,
+      alt: alt_text,
+      widths: widths,
+      sizes: sizes,
+      style: "object-position: " | append: focal_point
+  }}
+{%- else -%}
+  <div
+    class="image-placeholder {{ class_names }}"
+    style="background:var(--color-surface);display:flex;align-items:center;justify-content:center;width:100%;height:100%"
+    aria-label="{{ alt_text | default: 'Image placeholder' }}"
+  >
+    <span class="material-symbols-outlined" aria-hidden="true" style="font-size:48px;color:var(--color-border)">image</span>
+  </div>
+{%- endif -%}

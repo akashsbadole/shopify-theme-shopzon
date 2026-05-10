@@ -1,0 +1,411 @@
+{% comment %} Product Template — Full OS2.0, ThemeForest & Shopify Theme Store compliant {% endcomment %}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign has_sale = false -%}
+{%- if current_variant.compare_at_price > current_variant.price -%}
+  {%- assign has_sale = true -%}
+  {%- assign savings = current_variant.compare_at_price | minus: current_variant.price -%}
+  {%- assign savings_pct = savings | times: 100 | divided_by: current_variant.compare_at_price -%}
+{%- endif -%}
+
+{% render 'product-json-data', product: product %}
+
+<div class="page-container" style="padding-top:var(--space-3);padding-bottom:var(--space-8)">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="{{ 'general.breadcrumbs.aria_label' | t | default: 'Breadcrumb' }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    {%- if collection -%}
+      <a href="{{ collection.url }}">{{ collection.title }}</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    {%- endif -%}
+    <span aria-current="page">{{ product.title | truncate: 50 }}</span>
+  </nav>
+
+  <div class="product-layout">
+
+    <!-- ===== Gallery ===== -->
+    <div class="product-gallery">
+      <div class="product-gallery__main product-zoom-wrap" id="main-product-image" title="{{ 'products.general.zoom' | t | default: 'Click to zoom' }}" aria-label="{{ 'products.general.media_gallery' | t | default: 'Product gallery' }}">
+        {%- if product.featured_image -%}
+          {% render 'responsive-image',
+            image: product.featured_image,
+            widths: '400,600,800,1000',
+            sizes: '(min-width:1024px) 50vw, 100vw',
+            loading: 'eager',
+            class: '',
+            alt: product.featured_image.alt | default: product.title
+          %}
+        {%- else -%}
+          <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--color-border)" aria-label="{{ 'products.general.no_image' | t | default: 'No image' }}">
+            <span class="material-symbols-outlined" aria-hidden="true" style="font-size:80px">inventory_2</span>
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if product.images.size > 1 -%}
+        <div class="product-gallery__thumbs" role="list" aria-label="{{ 'products.general.thumbnail_images' | t | default: 'Product thumbnails' }}">
+          {%- for image in product.images -%}
+            <button
+              class="product-gallery__thumb {% if forloop.first %}active{% endif %}"
+              role="listitem"
+              aria-label="{{ 'products.general.load_image' | t: index: forloop.index | default: 'View image ' | append: forloop.index }}"
+              aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+              onclick="switchGalleryImage('{{ image | image_url: width: 900 }}', this)"
+              style="background:none;border:none;padding:0;cursor:pointer"
+            >
+              {% render 'responsive-image',
+                image: image,
+                widths: '120,240',
+                sizes: '60px',
+                loading: 'lazy',
+                alt: image.alt | default: product.title
+              %}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- ===== Product Info ===== -->
+    <div class="product-info" id="product-info-panel">
+
+      {%- if product.vendor != blank -%}
+        <div class="product-info__brand">
+          <a href="{{ routes.collections_url }}/vendors?q={{ product.vendor | url_encode }}">{{ product.vendor }}</a>
+        </div>
+      {%- endif -%}
+
+      <h1 class="product-info__title">{{ product.title }}</h1>
+
+      <!-- Rating / reviews placeholder -->
+      <div class="product-info__stars">
+        <span class="stars" aria-label="{{ 'products.general.review_stars' | t: rating: '4.3' | default: '4.3 stars' }}" style="font-size:18px">★★★★☆</span>
+        <a href="#reviews" class="review-link">{{ product.metafields.reviews.rating_count.value | default: 0 }} {{ 'products.general.reviews' | t | default: 'ratings' }}</a>
+      </div>
+
+      <!-- Price -->
+      <div class="product-info__price" id="price-wrapper">
+        <div class="price-label">{{ 'products.general.price' | t | default: 'Price' }}:</div>
+        <div>
+          <span class="price-main" id="product-price">
+            <span class="price-symbol" aria-hidden="true">{{ cart.currency.symbol }}</span><span id="price-amount">{{ current_variant.price | money_without_currency }}</span>
+          </span>
+          {%- if has_sale -%}
+            <div class="price-was" id="compare-price">
+              {{ 'products.general.was_price' | t | default: 'Was' }}: <s>{{ current_variant.compare_at_price | money }}</s>
+              <span class="price-savings-badge">{{ 'products.general.save_percent' | t: percent: savings_pct | default: savings_pct | append: '% off' }}</span>
+            </div>
+          {%- else -%}
+            <div id="compare-price" style="display:none"></div>
+          {%- endif -%}
+        </div>
+
+        <!-- Stock indicator -->
+        {%- if current_variant.inventory_management != blank and current_variant.inventory_quantity > 0 -%}
+          {%- assign stock = current_variant.inventory_quantity -%}
+          <div class="stock-level" style="margin-top:var(--space-2)">
+            {%- if stock <= 5 -%}
+              <span style="color:var(--color-price);font-size:13px;font-weight:600">
+                {{ 'products.inventory.low_stock_show_count' | t: quantity: stock | default: 'Only ' | append: stock | append: ' left!' }}
+              </span>
+            {%- elsif stock <= 20 -%}
+              <span style="color:var(--color-accent-orange);font-size:13px">
+                {{ 'products.inventory.in_stock' | t | default: 'In stock' }} — {{ 'products.inventory.order_soon' | t | default: 'order soon' }}
+              </span>
+            {%- else -%}
+              <span style="color:var(--color-success);font-size:13px;font-weight:500">
+                ✓ {{ 'products.inventory.in_stock' | t | default: 'In stock' }}
+              </span>
+            {%- endif -%}
+          </div>
+        {%- elsif current_variant.available == false -%}
+          <div style="color:var(--color-error);font-size:13px;font-weight:600;margin-top:var(--space-2)">
+            {{ 'products.general.sold_out' | t | default: 'Sold Out' }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Add to Cart Form -->
+      <form
+        id="product-form-{{ product.id }}"
+        action="{{ routes.cart_add_url }}"
+        method="post"
+        enctype="multipart/form-data"
+        data-variants="{{ product.variants | json | escape }}"
+        novalidate
+      >
+        <input type="hidden" name="form_type" value="product">
+        <input type="hidden" name="utf8" value="✓">
+        <input type="hidden" name="id" value="{{ current_variant.id }}" id="variant-id-input">
+
+        <!-- Variant selectors -->
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            <div class="product-variants">
+              <div class="variant-label">
+                {{ option.name }}: <span id="selected-{{ option.position }}">{{ option.selected_value }}</span>
+                {%- if option.name == 'Size' or option.name == 'size' -%}
+                  &nbsp;–&nbsp;
+                  <button type="button" onclick="openSizeGuide()" style="font-size:12px;color:var(--color-link);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline" aria-label="{{ 'products.general.size_guide' | t | default: 'Size Guide' }}">
+                    {{ 'products.general.size_guide' | t | default: 'Size Guide' }}
+                  </button>
+                {%- endif -%}
+              </div>
+              <div class="variant-swatches" role="group" aria-label="{{ option.name }}">
+                {%- for value in option.values -%}
+                  <button
+                    type="button"
+                    class="variant-swatch {% if option.selected_value == value %}selected{% endif %}"
+                    data-group="{{ option.position }}"
+                    data-value="{{ value }}"
+                    aria-pressed="{% if option.selected_value == value %}true{% else %}false{% endif %}"
+                    aria-label="{{ value }}"
+                    onclick="selectVariant({{ option.position }}, '{{ value | escape }}', this)"
+                  >
+                    {{ value }}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endunless -%}
+
+        <!-- Quantity -->
+        <div class="product-qty">
+          <span class="qty-label" id="quantity-label">{{ 'products.general.quantity' | t | default: 'Qty' }}:</span>
+          <div class="qty-selector" aria-labelledby="quantity-label">
+            <button type="button" class="qty-btn" aria-label="{{ 'products.general.decrease_quantity' | t | default: 'Decrease quantity' }}" onclick="changeQty(-1)">−</button>
+            <input
+              type="number"
+              name="quantity"
+              id="product-qty-input"
+              value="1"
+              min="1"
+              aria-label="{{ 'products.general.quantity' | t | default: 'Quantity' }}"
+              class="qty-input"
+            >
+            <button type="button" class="qty-btn" aria-label="{{ 'products.general.increase_quantity' | t | default: 'Increase quantity' }}" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="product-cta">
+          {%- if current_variant.available -%}
+            <button
+              type="submit"
+              id="add-to-cart-btn"
+              name="add"
+              class="btn btn-primary btn-lg btn-full"
+              aria-label="{{ 'products.general.add_to_cart' | t | default: 'Add to Cart' }}"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">add_shopping_cart</span>
+              {{ 'products.general.add_to_cart' | t | default: 'Add to Cart' }}
+            </button>
+
+            <!-- Accelerated Checkout Buttons (Requirement #4) -->
+            {% render 'accelerated-checkout', product: product, variant: current_variant %}
+
+          {%- else -%}
+            <button type="submit" id="add-to-cart-btn" name="add" class="btn btn-ghost btn-lg btn-full" disabled aria-disabled="true" aria-label="{{ 'products.general.sold_out' | t | default: 'Sold Out' }}">
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">remove_shopping_cart</span>
+              {{ 'products.general.sold_out' | t | default: 'Sold Out' }}
+            </button>
+            {% render 'back-in-stock', variant: current_variant %}
+          {%- endif -%}
+
+          <div style="display:flex;gap:var(--space-2)">
+            <button type="button" class="btn btn-ghost btn-full" data-wishlist-btn="{{ product.id }}" aria-label="{{ 'products.general.add_to_wishlist' | t | default: 'Add to Wishlist' }}" style="flex:1">
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">favorite_border</span>
+              {{ 'products.general.wishlist' | t | default: 'Wishlist' }}
+            </button>
+            <button type="button" class="btn btn-ghost btn-full" style="flex:1" aria-label="{{ 'products.general.compare' | t | default: 'Compare' }}"
+              onclick="Compare.toggle({id:{{ product.id }},title:{{ product.title | json }},url:{{ product.url | json }},image:{{ product.featured_image | image_url: width: 200 | json }},price:{{ product.price }}})">
+              <span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">compare_arrows</span>
+              {{ 'products.general.compare' | t | default: 'Compare' }}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Shipping progress bar -->
+      <div class="shipping-progress" aria-live="polite">
+        <div class="shipping-progress__text">{{ 'cart.shipping.loading' | t | default: 'Loading...' }}</div>
+        <div class="shipping-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="shipping-progress__fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Delivery info -->
+      <div class="product-delivery">
+        <div class="delivery-row">
+          <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+          <div>
+            <strong>{{ 'products.delivery.free_delivery' | t | default: 'FREE delivery' }}</strong>
+            <div style="color:var(--color-text-secondary)">{{ 'now' | date: '%s' | plus: 172800 | date: '%A, %B %-d' }}</div>
+          </div>
+        </div>
+        <div class="delivery-row">
+          <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
+          <div>{{ 'products.delivery.sold_by' | t | default: 'Sold by' }} <a href="#">{{ product.vendor | default: shop.name }}</a></div>
+        </div>
+        <div class="delivery-row">
+          <span class="material-symbols-outlined" aria-hidden="true">autorenew</span>
+          <div><a href="{{ shop.refund_policy.url }}">{{ 'products.delivery.free_returns' | t | default: '30-day free returns' }}</a></div>
+        </div>
+        <div class="delivery-row">
+          <span class="material-symbols-outlined" aria-hidden="true">security</span>
+          <div>{{ 'products.delivery.secure_checkout' | t | default: 'Secure checkout · SSL encrypted' }}</div>
+        </div>
+      </div>
+
+      <!-- Payment icons -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-divider)" aria-label="{{ 'products.general.accepted_payments' | t | default: 'Accepted payment methods' }}">
+        <span style="font-size:11px;color:var(--color-text-muted)">{{ 'products.general.accepted_payments' | t | default: 'We accept:' }}</span>
+        {%- for type in shop.enabled_payment_types -%}
+          {{ type | payment_type_svg_tag: style: 'height:20px;border-radius:3px;', title: type }}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Description Tabs -->
+  <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);margin-top:var(--space-5);overflow:hidden" role="tablist" aria-label="{{ 'products.tabs.label' | t | default: 'Product information' }}">
+    <div class="tab-nav">
+      <button class="tab-nav-item active" role="tab" aria-selected="true" aria-controls="tab-desc" id="tab-btn-desc" onclick="switchGenericTab('desc','tab-desc',this)">
+        {{ 'products.tabs.description' | t | default: 'Description' }}
+      </button>
+      <button class="tab-nav-item" role="tab" aria-selected="false" aria-controls="tab-specs" id="tab-btn-specs" onclick="switchGenericTab('specs','tab-specs',this)">
+        {{ 'products.tabs.specifications' | t | default: 'Specifications' }}
+      </button>
+      <button class="tab-nav-item" role="tab" aria-selected="false" aria-controls="tab-ship" id="tab-btn-ship" onclick="switchGenericTab('ship','tab-ship',this)">
+        {{ 'products.tabs.shipping' | t | default: 'Shipping & Returns' }}
+      </button>
+    </div>
+
+    <div id="tab-desc" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-desc" style="padding:var(--space-5)">
+      {%- if product.description != blank -%}
+        <div class="product-description">{{ product.description }}</div>
+      {%- else -%}
+        <p style="color:var(--color-text-secondary)">{{ 'products.tabs.no_description' | t | default: 'No description available.' }}</p>
+      {%- endif -%}
+    </div>
+    <div id="tab-specs" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-specs" style="padding:var(--space-5)">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        {%- if product.vendor != blank -%}
+          <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;width:180px;background:var(--color-surface);text-align:left">{{ 'products.specs.brand' | t | default: 'Brand' }}</th><td style="padding:10px">{{ product.vendor }}</td></tr>
+        {%- endif -%}
+        {%- if product.type != blank -%}
+          <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.type' | t | default: 'Type' }}</th><td style="padding:10px">{{ product.type }}</td></tr>
+        {%- endif -%}
+        <tr style="border-bottom:1px solid var(--color-divider)"><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.sku' | t | default: 'SKU' }}</th><td style="padding:10px">{{ current_variant.sku | default: 'N/A' }}</td></tr>
+        {%- if current_variant.weight > 0 -%}
+          <tr><th scope="row" style="padding:10px;font-weight:600;background:var(--color-surface);text-align:left">{{ 'products.specs.weight' | t | default: 'Weight' }}</th><td style="padding:10px">{{ current_variant.weight }} {{ current_variant.weight_unit }}</td></tr>
+        {%- endif -%}
+      </table>
+    </div>
+    <div id="tab-ship" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-ship" style="padding:var(--space-5)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)">
+        <div>
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">{{ 'products.tabs.shipping_title' | t | default: 'Shipping' }}</h3>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px">
+            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.free_standard' | t | default: 'Free standard shipping on orders over $50' }}</li>
+            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.express' | t | default: 'Express delivery available at checkout' }}</li>
+            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.shipping.international' | t | default: 'International shipping to select countries' }}</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:12px">{{ 'products.tabs.returns_title' | t | default: 'Returns' }}</h3>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;font-size:14px">
+            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.days' | t | default: '30-day hassle-free returns' }}</li>
+            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.free_defective' | t | default: 'Free return shipping on defective items' }}</li>
+            <li style="display:flex;gap:8px"><span class="material-symbols-outlined" aria-hidden="true" style="font-size:16px;color:var(--color-success)">check_circle</span>{{ 'products.returns.refund_time' | t | default: 'Full refund within 7 business days' }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="reviews-section" id="reviews" aria-label="{{ 'products.reviews.title' | t | default: 'Customer Reviews' }}">
+    <h2 style="font-size:21px;font-weight:700;margin-bottom:var(--space-5)">{{ 'products.reviews.title' | t | default: 'Customer Reviews' }}</h2>
+    <div style="background:var(--color-surface);border-radius:var(--border-radius);padding:var(--space-4);font-size:13px;color:var(--color-text-secondary);border:1px solid var(--color-border)">
+      <strong style="color:var(--color-text-primary)">{{ 'products.reviews.app_notice' | t | default: 'Connect a review app to enable verified reviews.' }}</strong>
+      {{ 'products.reviews.app_suggestions' | t | default: 'Recommended: Judge.me, Okendo, Yotpo, or Loox from the Shopify App Store.' }}
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  {%- if recommendations.performed? and recommendations.products.size > 0 -%}
+    <div style="margin-top:var(--space-6)">
+      <div class="section-header">
+        <h2 class="section-title">{{ 'products.recommendations.title' | t | default: 'You may also like' }}</h2>
+      </div>
+      <div class="products-grid products-grid--5">
+        {%- for rec in recommendations.products limit: 5 -%}
+          {% render 'product-card', product: rec %}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  <!-- Recently Viewed -->
+  <div id="recently-viewed-section" class="recently-viewed" style="display:none;margin-top:var(--space-5)" aria-label="{{ 'products.recently_viewed.title' | t | default: 'Recently Viewed' }}"></div>
+
+</div>
+
+<!-- Size Guide Modal -->
+{% render 'size-guide', product: product %}
+
+<script>
+function switchGalleryImage(src, thumb) {
+  const img = document.querySelector('#main-product-image img');
+  if (img) { img.src = src; img.srcset = ''; }
+  document.querySelectorAll('.product-gallery__thumb').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-pressed', 'false');
+  });
+  if (thumb) { thumb.classList.add('active'); thumb.setAttribute('aria-pressed', 'true'); }
+}
+
+function changeQty(delta) {
+  const input = document.getElementById('product-qty-input');
+  input.value = Math.max(1, parseInt(input.value || 1) + delta);
+}
+
+function selectVariant(optionPos, value, btn) {
+  document.getElementById('selected-' + optionPos).textContent = value;
+  const group = btn.closest('[role=group]');
+  if (group) group.querySelectorAll('.variant-swatch').forEach(s => { s.classList.remove('selected'); s.setAttribute('aria-pressed','false'); });
+  btn.classList.add('selected');
+  btn.setAttribute('aria-pressed','true');
+
+  const form = btn.closest('form');
+  if (!form) return;
+  const variants = JSON.parse(form.dataset.variants || '[]');
+  const selected = {};
+  form.querySelectorAll('.variant-swatch.selected').forEach(s => { selected[s.dataset.group] = s.dataset.value; });
+  const match = variants.find(v => Object.entries(selected).every(([k,val]) => v['option'+k] === val));
+
+  if (match) {
+    document.getElementById('variant-id-input').value = match.id;
+    const pa = document.getElementById('price-amount');
+    if (pa) pa.textContent = (match.price / 100).toFixed(2);
+    const cp = document.getElementById('compare-price');
+    if (cp) cp.style.display = match.compare_at_price > match.price ? '' : 'none';
+    const btn2 = document.getElementById('add-to-cart-btn');
+    if (btn2) {
+      btn2.disabled = !match.available;
+      btn2.setAttribute('aria-disabled', !match.available);
+      btn2.innerHTML = match.available
+        ? '<span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">add_shopping_cart</span> {{ "products.general.add_to_cart" | t | default: "Add to Cart" }}'
+        : '<span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">remove_shopping_cart</span> {{ "products.general.sold_out" | t | default: "Sold Out" }}';
+    }
+    const stickyId = document.getElementById('sticky-variant-id');
+    if (stickyId) stickyId.value = match.id;
+  }
+}
+</script>
+
+

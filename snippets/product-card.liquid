@@ -1,0 +1,95 @@
+{% comment %}
+  Renders a product card.
+  Usage: {% render 'product-card', product: product %}
+{% endcomment %}
+
+{% assign has_sale = false %}
+{% if product.compare_at_price > product.price %}
+  {% assign has_sale = true %}
+  {% assign savings_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+{% endif %}
+
+<div class="product-card">
+  <!-- Image -->
+  <div class="product-card__image-wrap">
+    <a href="{{ product.url }}">
+      {% if product.featured_image %}
+        {{ product.featured_image | image_url: width: 400 | image_tag:
+          class: 'product-card__image',
+          loading: 'lazy',
+          alt: product.featured_image.alt | default: product.title
+        }}
+      {% else %}
+        <div class="product-card__image-placeholder">
+          <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+      {% endif %}
+    </a>
+
+    <!-- Badges -->
+    <div class="product-card__badges">
+      {% if has_sale %}
+        <span class="product-badge product-badge--sale">-{{ savings_pct }}%</span>
+      {% endif %}
+      {% if product.tags contains 'new' or product.tags contains 'New' %}
+        <span class="product-badge product-badge--new">New</span>
+      {% endif %}
+      {% if product.tags contains 'prime' or product.tags contains 'Prime' %}
+        <span class="product-badge product-badge--prime">Prime</span>
+      {% endif %}
+    </div>
+
+    <!-- Wishlist -->
+    <button class="product-card__wishlist" data-wishlist-btn="{{ product.id }}" aria-label="Save to wishlist">
+      <span class="material-symbols-outlined">favorite</span>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="product-card__body">
+    {% if product.vendor != blank %}
+      <div class="product-card__brand">{{ product.vendor }}</div>
+    {% endif %}
+
+    <a href="{{ product.url }}" class="product-card__title">{{ product.title }}</a>
+
+    <!-- Stars (static demo — replace with app for real reviews) -->
+    <div class="product-card__stars">
+      <span class="stars">★★★★{% if product.metafields.reviews.rating.value >= 5 %}★{% else %}☆{% endif %}</span>
+      <span class="review-count" style="color:var(--color-link);font-size:12px">
+        ({{ product.metafields.reviews.rating_count.value | default: '0' }})
+      </span>
+    </div>
+
+    <!-- Price -->
+    <div class="product-card__price">
+      <span class="price-current">
+        <span class="price-symbol">{{ cart.currency.symbol }}</span>{{ product.price | money_without_currency }}
+      </span>
+      {% if has_sale %}
+        <span class="price-compare">{{ product.compare_at_price | money }}</span>
+      {% endif %}
+    </div>
+
+    {% if product.tags contains 'prime' %}
+      <div class="product-card__shipping" style="color:var(--color-prime)">✓ Prime · Free delivery</div>
+    {% elsif product.tags contains 'free-shipping' %}
+      <div class="product-card__shipping">FREE delivery available</div>
+    {% endif %}
+  </div>
+
+  <!-- CTA -->
+  {% unless product.available == false %}
+    <div class="product-card__cta">
+      <form action="/cart/add" method="post">
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button type="submit" class="btn-add-to-cart">Add to Cart</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="product-card__cta">
+      <button class="btn-add-to-cart" disabled style="background:var(--color-divider);color:var(--color-text-secondary);cursor:not-allowed">Out of Stock</button>
+    </div>
+  {% endunless %}
+</div>

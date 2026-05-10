@@ -1,0 +1,124 @@
+{% comment %} Customer Account Template {% endcomment %}
+
+<div class="page-container" style="padding-top:var(--space-4);padding-bottom:var(--space-10)">
+  <nav class="breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>My Account</span>
+  </nav>
+
+  <div style="display:grid;grid-template-columns:220px 1fr;gap:var(--space-5);align-items:start">
+
+    <!-- Sidebar -->
+    <aside>
+      <div style="background:var(--color-nav-dark);color:#fff;border-radius:var(--border-radius);padding:var(--space-4);margin-bottom:var(--space-3);text-align:center">
+        <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:8px">account_circle</span>
+        <div style="font-weight:700;font-size:16px">{{ customer.first_name }} {{ customer.last_name }}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7)">{{ customer.email }}</div>
+        {% if customer.orders_count > 0 %}
+          <div style="font-size:12px;color:var(--color-accent-yellow);margin-top:6px">{{ customer.orders_count }} order{% if customer.orders_count != 1 %}s{% endif %}</div>
+        {% endif %}
+      </div>
+
+      <nav style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden">
+        {% assign nav_items = 'orders,Orders,orders|addresses,Addresses,location_on|wishlist,Wishlist,favorite|account,Account Details,manage_accounts' | split: '|' %}
+        {% for item in nav_items %}
+          {% assign parts = item | split: ',' %}
+          <a href="{% if parts[0] == 'orders' %}{{ routes.account_url }}{% elsif parts[0] == 'addresses' %}{{ routes.account_addresses_url }}{% elsif parts[0] == 'wishlist' %}/pages/wishlist{% else %}{{ routes.account_url }}{% endif %}"
+            style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--color-divider);color:var(--color-text-primary);text-decoration:none;font-size:14px;font-weight:500"
+            onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background=''">
+            <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-accent-orange)">{{ parts[2] }}</span>
+            {{ parts[1] }}
+          </a>
+        {% endfor %}
+        <a href="{{ routes.account_logout_url }}"
+          style="display:flex;align-items:center;gap:10px;padding:12px 16px;color:var(--color-error);text-decoration:none;font-size:14px;font-weight:500"
+          onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background=''">
+          <span class="material-symbols-outlined" style="font-size:18px">logout</span>
+          Sign Out
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div>
+
+      <!-- Orders -->
+      <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden;margin-bottom:var(--space-4)">
+        <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);display:flex;align-items:center;justify-content:space-between">
+          <h2 style="font-size:18px;font-weight:700">My Orders</h2>
+          {% if customer.orders_count > 3 %}
+            <a href="{{ routes.account_url }}/orders" style="font-size:13px;color:var(--color-link)">View all orders</a>
+          {% endif %}
+        </div>
+
+        {% if customer.orders.size > 0 %}
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead>
+              <tr style="background:var(--color-surface)">
+                <th style="padding:10px 16px;text-align:left;font-weight:600;font-size:12px;color:var(--color-text-secondary);border-bottom:1px solid var(--color-divider)">Order</th>
+                <th style="padding:10px 16px;text-align:left;font-weight:600;font-size:12px;color:var(--color-text-secondary);border-bottom:1px solid var(--color-divider)">Date</th>
+                <th style="padding:10px 16px;text-align:left;font-weight:600;font-size:12px;color:var(--color-text-secondary);border-bottom:1px solid var(--color-divider)">Status</th>
+                <th style="padding:10px 16px;text-align:right;font-weight:600;font-size:12px;color:var(--color-text-secondary);border-bottom:1px solid var(--color-divider)">Total</th>
+                <th style="padding:10px 16px;border-bottom:1px solid var(--color-divider)"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in customer.orders limit: 5 %}
+                <tr style="border-bottom:1px solid var(--color-divider)" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background=''">
+                  <td style="padding:12px 16px;font-weight:600;color:var(--color-link)">
+                    <a href="{{ order.customer_url }}" style="color:var(--color-link)">{{ order.name }}</a>
+                  </td>
+                  <td style="padding:12px 16px;color:var(--color-text-secondary)">{{ order.created_at | date: '%b %-d, %Y' }}</td>
+                  <td style="padding:12px 16px">
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:700;
+                      {% if order.financial_status == 'paid' %}background:#d1fae5;color:#065f46
+                      {% elsif order.financial_status == 'pending' %}background:#fef3c7;color:#92400e
+                      {% elsif order.financial_status == 'refunded' %}background:#fee2e2;color:#991b1b
+                      {% else %}background:var(--color-surface);color:var(--color-text-secondary){% endif %}">
+                      {{ order.financial_status | replace: '_', ' ' | capitalize }}
+                    </span>
+                  </td>
+                  <td style="padding:12px 16px;text-align:right;font-weight:600">{{ order.total_price | money }}</td>
+                  <td style="padding:12px 16px;text-align:right">
+                    <a href="{{ order.customer_url }}" class="btn btn-ghost btn-sm">Details</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div style="padding:var(--space-10);text-align:center;color:var(--color-text-secondary)">
+            <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:var(--space-3);color:var(--color-border)">orders</span>
+            <p style="font-weight:600;margin-bottom:8px">No orders yet</p>
+            <p style="font-size:13px;margin-bottom:var(--space-4)">When you place orders, they'll appear here.</p>
+            <a href="{{ routes.root_url }}" class="btn btn-primary">Start Shopping</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Default Address -->
+      <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden">
+        <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--color-divider);display:flex;align-items:center;justify-content:space-between">
+          <h2 style="font-size:18px;font-weight:700">Default Address</h2>
+          <a href="{{ routes.account_addresses_url }}" style="font-size:13px;color:var(--color-link)">Manage addresses</a>
+        </div>
+        <div style="padding:var(--space-4) var(--space-5)">
+          {% if customer.default_address %}
+            <address style="font-style:normal;font-size:14px;line-height:1.8;color:var(--color-text-primary)">
+              <strong>{{ customer.default_address.name }}</strong><br>
+              {{ customer.default_address.company }}<br>
+              {{ customer.default_address.address1 }}<br>
+              {% if customer.default_address.address2 != blank %}{{ customer.default_address.address2 }}<br>{% endif %}
+              {{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}<br>
+              {{ customer.default_address.country }}<br>
+              {% if customer.default_address.phone != blank %}{{ customer.default_address.phone }}{% endif %}
+            </address>
+          {% else %}
+            <p style="color:var(--color-text-secondary);font-size:14px">No address saved yet. <a href="{{ routes.account_addresses_url }}" style="color:var(--color-link)">Add one now</a>.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

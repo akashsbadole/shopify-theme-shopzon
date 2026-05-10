@@ -1,0 +1,16 @@
+{% comment %}
+  Outputs product data as JSON for JS tracking.
+  Include on product pages: {% render 'product-json-data', product: product %}
+{% endcomment %}
+<script id="product-json-data" type="application/json">
+{
+  "id": {{ product.id }},
+  "title": {{ product.title | json }},
+  "url": {{ product.url | json }},
+  "vendor": {{ product.vendor | json }},
+  "price": {{ product.price }},
+  "featured_image": {{ product.featured_image | image_url: width: 300 | json }},
+  "available": {{ product.available }},
+  "tags": {{ product.tags | json }}
+}
+</script>
