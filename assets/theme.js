@@ -13,8 +13,8 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
 
 function formatMoney(cents) {
-  const amount = (cents / 100).toFixed(2);
-  return `$${amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+  var amount = (cents / 100).toFixed(2);
+  return '$' + amount.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 // ============================================
@@ -170,25 +170,25 @@ const CartDrawer = (() => {
       return;
     }
 
-    body.innerHTML = cart.items.map(item => `
-      <div class="cart-item" data-key="${item.key}">
-        <div class="cart-item__image">
-          <a href="${item.url}"><img src="${item.image}" alt="${item.product_title}" loading="lazy"></a>
-        </div>
-        <div class="cart-item__details">
-          <a href="${item.url}" class="cart-item__title">${item.product_title}</a>
-          ${item.variant_title ? `<div class="cart-item__variant">${item.variant_title}</div>` : ''}
-          <div class="cart-item__controls">
-            <div class="qty-selector" style="height:28px">
-              <button class="qty-btn" onclick="CartDrawer.updateQty('${item.key}', ${item.quantity - 1})" style="width:28px;height:28px">−</button>
-              <input class="qty-input" type="number" value="${item.quantity}" min="0" style="width:40px;height:28px;font-size:13px" onchange="CartDrawer.updateQty('${item.key}', this.value)">
-              <button class="qty-btn" onclick="CartDrawer.updateQty('${item.key}', ${item.quantity + 1})" style="width:28px;height:28px">+</button>
-            </div>
-            <span class="cart-item-action-link" onclick="CartDrawer.updateQty('${item.key}', 0)">Remove</span>
-          </div>
-        </div>
-        <div class="cart-item__price">${formatMoney(item.final_line_price)}</div>
-      </div>`).join('');
+    body.innerHTML = cart.items.map(function(item) {
+      var variantHtml = item.variant_title ? '<div class="cart-item__variant">' + item.variant_title + '</div>' : '';
+      return '<div class="cart-item" data-key="' + item.key + '">' +
+        '<div class="cart-item__image"><a href="' + item.url + '"><img src="' + item.image + '" alt="' + item.product_title + '" loading="lazy"></a></div>' +
+        '<div class="cart-item__details">' +
+          '<a href="' + item.url + '" class="cart-item__title">' + item.product_title + '</a>' +
+          variantHtml +
+          '<div class="cart-item__controls">' +
+            '<div class="qty-selector" style="height:28px">' +
+              '<button class="qty-btn" data-action="decrease" data-key="' + item.key + '" style="width:28px;height:28px">-</button>' +
+              '<input class="qty-input" type="number" value="' + item.quantity + '" min="0" style="width:40px;height:28px;font-size:13px" onchange="CartDrawer.updateQty(\'' + item.key + '\', this.value)">' +
+              '<button class="qty-btn" data-action="increase" data-key="' + item.key + '" style="width:28px;height:28px">+</button>' +
+            '</div>' +
+            '<span class="cart-item-action-link" onclick="CartDrawer.updateQty(\'' + item.key + '\', 0)">Remove</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cart-item__price">' + formatMoney(item.final_line_price) + '</div>' +
+      '</div>';
+    }).join('');
 
     if (footer) footer.innerHTML = `
       <div class="cart-drawer__subtotal">
@@ -322,17 +322,15 @@ function initVariantSelector() {
 // QUANTITY SELECTOR
 // ============================================
 function initQtySelectors() {
-  document.addEventListener('click', e => {
-    if (e.target.matches('.qty-btn') || e.target.closest('.qty-btn')) {
-      const btn = e.target.closest('.qty-btn');
-      if (!btn) return;
-      const input = btn.parentElement.querySelector('.qty-input');
-      if (!input) return;
-      let val = parseInt(input.value) || 1;
-      if (btn.dataset.action === 'decrease' || btn.textContent.includes('−') || btn.textContent.includes('-')) val = Math.max(1, val - 1);
-      else val++;
-      input.value = val;
-    }
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.qty-btn');
+    if (!btn) return;
+    var input = btn.closest('.qty-selector').querySelector('.qty-input');
+    if (!input) return;
+    var val = parseInt(input.value) || 1;
+    if (btn.dataset.action === 'decrease') val = Math.max(1, val - 1);
+    else val++;
+    input.value = val;
   });
 }
 
@@ -645,7 +643,7 @@ const QuickView = (() => {
     document.body.style.overflow = 'hidden';
 
     try {
-      const res = await fetch(`${productUrl}?view=quick-view`);
+      const res = await fetch(productUrl + '?view=quick-view');
       // Fallback: fetch full page and extract product info
       const fullRes = await fetch(productUrl);
       const html = await fullRes.text();
@@ -1068,7 +1066,7 @@ const Compare = (() => {
             </div>`).join('')}
         </div>
         ${list.length >= 2 ? `<a href="/pages/compare?ids=${list.map(p => p.id).join(',')}" class="btn btn-primary btn-sm" style="flex-shrink:0">Compare Now</a>` : `<span style="font-size:12px;color:rgba(255,255,255,0.5)">Add 1 more to compare</span>`}
-        <button onclick="Compare.clearAll()" class="btn btn-ghost btn-sm" style="flex-shrink:0;color:#fff;border-color:rgba(255,255,255,0.3)">Clear</button>
+        <button onclick="Compare.clearAll()" class="btn btn-ghost btn-sm" style="flex-shrink:0;color:#000;border-color:rgba(255,255,255,0.3)">Clear</button>
       </div>`;
   }
 
@@ -1196,4 +1194,29 @@ document.addEventListener('click', function(e) {
       d.classList.add('hidden');
     }
   });
+
+  // Compare button
+  var compBtn = e.target.closest('[data-compare-btn]');
+  if (compBtn) {
+    e.preventDefault();
+    var product = {
+      id: parseInt(compBtn.dataset.compareBtn),
+      title: compBtn.dataset.compareTitle || '',
+      url: compBtn.dataset.compareUrl || '',
+      image: compBtn.dataset.compareImage || '',
+      price: parseInt(compBtn.dataset.comparePrice) || 0
+    };
+    if (window.Compare && window.Compare.toggle) {
+      window.Compare.toggle(product);
+    }
+  }
+
+  // Wishlist button
+  var wishBtn = e.target.closest('[data-wishlist-btn]');
+  if (wishBtn) {
+    e.preventDefault();
+    if (window.Wishlist && window.Wishlist.toggle) {
+      window.Wishlist.toggle(wishBtn.dataset.wishlistBtn);
+    }
+  }
 });

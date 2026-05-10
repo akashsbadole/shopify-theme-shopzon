@@ -157,6 +157,39 @@
     }
   },
   "sections": {
+    "cart": {
+      "title": "Shopping Cart",
+      "empty_title": "Your cart is empty",
+      "empty_message": "Add items to get started.",
+      "continue_shopping": "Continue Shopping",
+      "update_cart": "Update Cart",
+      "checkout": "Proceed to Checkout",
+      "order_summary": "Order Summary",
+      "subtotal": "Subtotal",
+      "discounts": "Discounts",
+      "total": "Total",
+      "discount_code": "Discount code",
+      "apply": "Apply",
+      "shipping_note": "Shipping",
+      "shipping_at_checkout": "Calculated at checkout",
+      "savings_note": "You save {{ amount }}",
+      "secure_checkout": "Secure checkout · SSL encrypted",
+      "remove_item": "Remove",
+      "headings": {
+        "product": "Product",
+        "quantity": "Qty",
+        "total": "Total"
+      },
+      "empty": {
+        "title": "Your cart is empty",
+        "message": "Add items to get started."
+      },
+      "item_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      },
+      "items": "items"
+    },
     "header": {
       "account": "Account",
       "cart": "Cart",

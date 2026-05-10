@@ -223,7 +223,11 @@
               {{ 'products.general.wishlist' | t | default: 'Wishlist' }}
             </button>
             <button type="button" class="btn btn-ghost btn-full" style="flex:1" aria-label="{{ 'products.general.compare' | t | default: 'Compare' }}"
-              onclick="Compare.toggle({id:{{ product.id }},title:{{ product.title | json }},url:{{ product.url | json }},image:{{ product.featured_image | image_url: width: 200 | json }},price:{{ product.price }}})">
+              data-compare-btn="{{ product.id }}"
+              data-compare-title="{{ product.title | escape }}"
+              data-compare-url="{{ product.url }}"
+              data-compare-image="{{ product.featured_image | image_url: width: 200 }}"
+              data-compare-price="{{ product.price }}">
               <span class="material-symbols-outlined" aria-hidden="true" style="font-size:18px">compare_arrows</span>
               {{ 'products.general.compare' | t | default: 'Compare' }}
             </button>

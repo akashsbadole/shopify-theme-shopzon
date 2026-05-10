@@ -1,0 +1,237 @@
+{% comment %} Cart Template — Full OS2.0 compliant {% endcomment %}
+
+<div class="page-container" style="padding-top:var(--space-4);padding-bottom:var(--space-8)">
+
+  <nav class="breadcrumb" aria-label="{{ 'general.breadcrumbs.aria_label' | t | default: 'Breadcrumb' }}">
+    <a href="{{ routes.root_url }}">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">›</span>
+    <span aria-current="page">{{ 'sections.cart.title' | t | default: 'Shopping Cart' }}</span>
+  </nav>
+
+  <h1 style="font-size:var(--font-size-2xl);font-weight:800;margin-bottom:var(--space-5)">
+    {{ 'sections.cart.title' | t | default: 'Shopping Cart' }}
+    <span id="cart-item-count" style="font-size:var(--font-size-md);font-weight:400;color:var(--color-text-secondary);margin-left:var(--space-2)">
+      {% if cart.item_count > 0 %}
+        ({{ cart.item_count }} {{ 'sections.cart.items' | t | default: 'items' }})
+      {% endif %}
+    </span>
+  </h1>
+
+  {% if cart.item_count > 0 %}
+    <div class="cart-page-layout">
+
+      <!-- Cart Items -->
+      <div class="cart-items-section">
+        <form action="{{ routes.cart_url }}" method="post" id="cart-form" novalidate>
+
+          <div class="cart-table-header" style="display:grid;grid-template-columns:3fr 1fr 1fr;gap:var(--space-3);padding:0 var(--space-3) var(--space-2);border-bottom:2px solid var(--color-border);margin-bottom:var(--space-2)">
+            <span style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary)">{{ 'sections.cart.headings.product' | t | default: 'Product' }}</span>
+            <span style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);text-align:center">{{ 'sections.cart.headings.quantity' | t | default: 'Qty' }}</span>
+            <span style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-secondary);text-align:right">{{ 'sections.cart.headings.total' | t | default: 'Total' }}</span>
+          </div>
+
+          {% for item in cart.items %}
+            <div class="cart-item-row" style="display:grid;grid-template-columns:3fr 1fr 1fr;gap:var(--space-3);align-items:center;padding:var(--space-4) var(--space-3);border-bottom:1px solid var(--color-border)">
+
+              <!-- Product Info -->
+              <div style="display:flex;gap:var(--space-4)">
+                <div class="cart-item-image" style="width:90px;height:90px;flex-shrink:0;border-radius:var(--border-radius);overflow:hidden;background:var(--color-surface);display:flex;align-items:center;justify-content:center;border:1px solid var(--color-border)">
+                  <a href="{{ item.url }}">
+                    <img src="{{ item.image | image_url: width: 180 }}" alt="{{ item.title }}" loading="lazy" style="width:100%;height:100%;object-fit:contain">
+                  </a>
+                </div>
+                <div style="flex:1">
+                  <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:2px">{{ item.vendor }}</div>
+                  <a href="{{ item.url }}" style="font-weight:700;font-size:var(--font-size-md);color:var(--color-text-primary);text-decoration:none;display:block;margin-bottom:4px">{{ item.product.title }}</a>
+                  {% unless item.variant.title == 'Default title' or item.variant.title == blank %}
+                    <div style="font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-bottom:var(--space-2)">{{ item.variant.title }}</div>
+                  {% endunless %}
+                  {% if item.line_level_discount_allocations.size > 0 %}
+                    {% for discount in item.line_level_discount_allocations %}
+                      <div style="font-size:12px;color:var(--color-success);margin-bottom:4px">
+                        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">local_offer</span>
+                        {{ discount.discount_application.title }}: -{{ discount.amount | money }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                  <div style="font-size:var(--font-size-sm);color:var(--color-text-primary)">
+                    <span class="price-current">{{ item.final_price | money }}</span>
+                    {% if item.original_line_price > item.final_line_price %}
+                      <s style="color:var(--color-text-muted);margin-left:4px">{{ item.original_line_price | money }}</s>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quantity -->
+              <div style="display:flex;align-items:center;justify-content:center">
+                <div class="qty-selector" style="height:36px">
+                  <button type="button" class="qty-btn" data-action="decrease" data-key="{{ item.key }}" style="width:36px;height:36px">-</button>
+                  <input type="number" name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" style="width:50px;height:36px;font-size:14px;text-align:center" class="qty-input">
+                  <button type="button" class="qty-btn" data-action="increase" data-key="{{ item.key }}" style="width:36px;height:36px">+</button>
+                </div>
+                <a href="{{ item.url_to_remove }}" class="cart-item-remove" style="margin-left:var(--space-3);color:var(--color-error);font-size:12px;text-decoration:underline" aria-label="{{ 'sections.cart.remove_item' | t | default: 'Remove' }}">
+                  {{ 'sections.cart.remove_item' | t | default: 'Remove' }}
+                </a>
+              </div>
+
+              <!-- Line Total -->
+              <div style="text-align:right;font-weight:700;font-size:var(--font-size-md);color:var(--color-price)">
+                {{ item.final_line_price | money }}
+              </div>
+            </div>
+          {% endfor %}
+
+          <!-- Cart Actions -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-3);margin-top:var(--space-3)">
+            <a href="{{ routes.root_url }}" class="btn btn-ghost" style="display:inline-flex;align-items:center;gap:4px">
+              <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+              {{ 'sections.cart.continue_shopping' | t | default: 'Continue Shopping' }}
+            </a>
+            <div style="display:flex;gap:var(--space-2)">
+              <button type="submit" name="update" class="btn btn-outline" style="display:inline-flex;align-items:center;gap:4px">
+                <span class="material-symbols-outlined" style="font-size:16px">autorenew</span>
+                {{ 'sections.cart.update_cart' | t | default: 'Update Cart' }}
+              </button>
+              <button type="submit" name="checkout" class="btn btn-primary btn-lg" style="display:inline-flex;align-items:center;gap:4px">
+                {{ 'sections.cart.checkout' | t | default: 'Proceed to Checkout' }}
+                <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="cart-summary-section" style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);padding:var(--space-5);height:fit-content">
+
+        <h2 style="font-size:var(--font-size-lg);font-weight:700;margin-bottom:var(--space-4)">{{ 'sections.cart.order_summary' | t | default: 'Order Summary' }}</h2>
+
+        <!-- Subtotal -->
+        <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-3)">
+          <span style="color:var(--color-text-secondary)">{{ 'sections.cart.subtotal' | t | default: 'Subtotal' }}</span>
+          <span id="cart-subtotal" style="font-weight:700">{{ cart.items_subtotal_price | money }}</span>
+        </div>
+
+        {% if cart.total_discounts > 0 %}
+          <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-3);color:var(--color-success)">
+            <span>{{ 'sections.cart.discounts' | t | default: 'Discounts' }}</span>
+            <span id="cart-discounts">-{{ cart.total_discounts | money }}</span>
+          </div>
+        {% endif %}
+
+        <!-- Shipping estimate -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-3);padding:var(--space-3) 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border)">
+          <span style="color:var(--color-text-secondary);font-size:var(--font-size-sm)">{{ 'sections.cart.shipping_note' | t | default: 'Shipping' }}</span>
+          <span style="font-size:var(--font-size-sm);color:var(--color-text-secondary)">{{ 'sections.cart.shipping_at_checkout' | t | default: 'Calculated at checkout' }}</span>
+        </div>
+
+        <!-- Total -->
+        <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-4)">
+          <span style="font-weight:700;font-size:var(--font-size-lg)">{{ 'sections.cart.total' | t | default: 'Total' }}</span>
+          <span id="cart-total" style="font-weight:700;font-size:var(--font-size-lg);color:var(--color-price)">{{ cart.total_price | money }}</span>
+        </div>
+
+        {% if cart.total_discounts > 0 %}
+          <div style="background:rgba(255,153,0,0.1);border-radius:var(--border-radius);padding:var(--space-3);margin-bottom:var(--space-4)">
+            <div style="font-size:12px;color:var(--color-accent-orange);font-weight:700">
+              {{ 'sections.cart.savings_note' | t: amount: cart.total_discounts | default: 'You save ' | append: cart.total_discounts | money }}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Free shipping progress -->
+        <div class="shipping-progress" aria-live="polite" style="margin-bottom:var(--space-4)">
+          <div class="shipping-progress__text" id="cart-shipping-text"></div>
+          <div class="shipping-progress__track" style="height:6px;background:var(--color-border);border-radius:3px;overflow:hidden">
+            <div class="shipping-progress__fill" id="cart-shipping-fill" style="height:100%;background:var(--color-success);transition:width 0.3s"></div>
+          </div>
+        </div>
+
+        {% if settings.cart_show_free_shipping %}
+        {% endif %}
+
+        <!-- Payment icons -->
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:var(--space-3) 0;border-top:1px solid var(--color-border);margin-bottom:var(--space-4)" aria-label="{{ 'products.general.accepted_payments' | t | default: 'Accepted payment methods' }}">
+          <span style="font-size:11px;color:var(--color-text-muted)">{{ 'products.general.accepted_payments' | t | default: 'We accept:' }}</span>
+          {% for type in shop.enabled_payment_types %}
+            {{ type | payment_type_svg_tag: style: 'height:20px;border-radius:3px;' }}
+          {% endfor %}
+        </div>
+
+        <!-- Promo code -->
+        <form id="promo-form" style="margin-bottom:var(--space-3)">
+          <div style="display:flex;gap:var(--space-2)">
+            <input type="text" name="discount" class="field-input" placeholder="{{ 'sections.cart.discount_code' | t | default: 'Discount code' }}" style="flex:1;font-size:13px;padding:8px 12px">
+            <button type="submit" class="btn btn-outline btn-sm">{{ 'sections.cart.apply' | t | default: 'Apply' }}</button>
+          </div>
+        </form>
+
+        <a href="/checkout" class="btn btn-primary btn-full btn-lg" style="display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;margin-bottom:var(--space-2)">
+          {{ 'sections.cart.checkout' | t | default: 'Proceed to Checkout' }}
+          <span class="material-symbols-outlined" style="font-size:18px">lock</span>
+        </a>
+        <p style="font-size:11px;color:var(--color-text-muted);text-align:center">{{ 'sections.cart.secure_checkout' | t | default: 'Secure checkout · SSL encrypted' }}</p>
+
+        {% if shop.enabled_payment_types.size > 0 %}
+          <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:var(--space-3)">
+            {% for type in shop.enabled_payment_types %}
+              {{ type | payment_type_svg_tag: style: 'height:20px;border-radius:3px;opacity:0.7' }}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Empty cart -->
+    <div style="text-align:center;padding:var(--space-12) var(--space-4)">
+      <span class="material-symbols-outlined" style="font-size:80px;color:var(--color-border);display:block;margin-bottom:var(--space-4)">shopping_cart</span>
+      <h2 style="font-size:var(--font-size-xl);font-weight:700;margin-bottom:var(--space-3)">{{ 'sections.cart.empty_title' | t | default: 'Your cart is empty' }}</h2>
+      <p style="color:var(--color-text-secondary);margin-bottom:var(--space-5)">{{ 'sections.cart.empty_message' | t | default: 'Add items to get started.' }}</p>
+      <a href="{{ routes.root_url }}/collections/all" class="btn btn-primary btn-lg" style="display:inline-flex;align-items:center;gap:6px">
+        <span class="material-symbols-outlined" style="font-size:18px"> storefront</span>
+        {{ 'sections.cart.continue_shopping' | t | default: 'Continue Shopping' }}
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+
+<script>
+(function() {
+  // Shipping progress
+  var threshold = {{ settings.cart_free_shipping_threshold | default: 50 }} * 100;
+  var total = {{ cart.total_price }};
+  var pct = Math.min((total / threshold) * 100, 100);
+  var remaining = Math.max(threshold - total, 0);
+  var textEl = document.getElementById('cart-shipping-text');
+  var fillEl = document.getElementById('cart-shipping-fill');
+  if (textEl) {
+    if (remaining <= 0) {
+      textEl.innerHTML = '&#10003; <strong>You\'ve unlocked FREE shipping!</strong>';
+      if (fillEl) fillEl.style.background = 'var(--color-success)';
+    } else {
+      textEl.innerHTML = 'Add <strong>$' + (remaining / 100).toFixed(2) + '</strong> more for <strong>FREE shipping</strong>';
+    }
+  }
+  if (fillEl) fillEl.style.width = pct + '%';
+})();
+</script>
+
+<style>
+.cart-page-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-6);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .cart-page-layout { grid-template-columns: 1fr; }
+  .cart-summary-section { order: -1; }
+  .cart-item-row { grid-template-columns: 1fr !important; gap: var(--space-2) !important; }
+  .cart-table-header { display: none !important; }
+  .cart-item-row > div:last-child { text-align: left !important; }
+}
+</style>
