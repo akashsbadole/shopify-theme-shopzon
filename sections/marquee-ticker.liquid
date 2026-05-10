@@ -1,28 +1,8 @@
 <section class="marquee-section" style="background:{{ section.settings.bg_color }};color:{{ section.settings.text_color }}">
   <div class="marquee-track" style="animation-duration:{{ section.settings.speed }}s">
-    {% for block in section.blocks %}
-      {% if block.type == 'item' %}
-        <span class="marquee-item" {{ block.shopify_attributes }}>
-          {% if block.settings.icon != blank %}
-            <span class="material-symbols-outlined" style="font-size:16px">{{ block.settings.icon }}</span>
-          {% endif %}
-          {{ block.settings.text }}
-        </span>
-        <span class="marquee-item" style="opacity:0.3">✦</span>
-      {% endif %}
-    {% endfor %}
+    {% render 'marquee-items' %}
     <span class="marquee-spacer" aria-hidden="true"></span>
-    {% for block in section.blocks %}
-      {% if block.type == 'item' %}
-        <span class="marquee-item">
-          {% if block.settings.icon != blank %}
-            <span class="material-symbols-outlined" style="font-size:16px">{{ block.settings.icon }}</span>
-          {% endif %}
-          {{ block.settings.text }}
-        </span>
-        <span class="marquee-item" style="opacity:0.3">✦</span>
-      {% endif %}
-    {% endfor %}
+    {% render 'marquee-items' %}
   </div>
 </section>
 
