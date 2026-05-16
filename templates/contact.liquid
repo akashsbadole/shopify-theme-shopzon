@@ -165,8 +165,31 @@
         <p style="font-size:12px;color:var(--color-text-secondary);text-align:center;margin-top:var(--space-3)">
           We typically respond within 24 business hours
         </p>
-      {% endform %}
-    </div>
-  </div>
+{% endform %}
+       </div>
+   </div>
 </div>
+
+<!-- ContactPage Schema.org JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": {{ page.title | json }},
+  "url": "{{ shop.url }}{{ page.url }}",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | json }},
+    "telephone": "+18005551234",
+    "email": {{ shop.email | json }},
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+18005551234",
+      "contactType": "customer service",
+      "hoursAvailable": "Mon-Fri 9am-6pm"
+    }
+  }
+}
+</script>
 

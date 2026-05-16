@@ -218,7 +218,7 @@
       { "type": "checkbox", "id": "seo_noindex_search", "label": "Noindex search result pages", "default": true, "info": "Prevents search engines from indexing search result pages" },
       { "type": "checkbox", "id": "seo_noindex_blog", "label": "Noindex blog listing page", "default": false },
       { "type": "text", "id": "seo_default_description", "label": "Default meta description", "info": "Fallback description when page has no description" },
-      { "type": "text", "id": "seo_default_keywords", "label": "Default meta keywords", "info": "Comma-separated keywords for homepage" }
+      { "type": "text", "id": "seo_keywords", "label": "SEO keywords", "info": "Comma-separated keywords for meta tag" },
     ]
   },
   {

@@ -16,7 +16,7 @@
     <meta name="description" content="{{ settings.seo_default_description | escape }}">
   {%- endif -%}
 
-  {%- assign noindex_templates = 'cart,search,blog,account,login,register,reset_password,orders,order,addresses' | split: ',' -%}
+  {%- assign noindex_templates = 'cart,search,account,login,register,reset_password,orders,order,addresses' | split: ',' -%}
   {%- assign is_noindex = false -%}
   {%- if noindex_templates contains template.name -%}
     {%- assign is_noindex = true -%}
@@ -80,7 +80,7 @@
      {{ settings.custom_code_head }}
    {%- endif -%}
 
-   {% comment %} Open Graph Tags {% endcomment %}
+{% comment %} Open Graph Tags {% endcomment %}
   <meta property="og:site_name" content="{{ shop.name }}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:locale" content="{{ request.locale.iso_code }}">
@@ -91,23 +91,44 @@
   {% else %}
   <meta property="og:title" content="{{ page_title | escape }}">
   {% endif %}
-  {% if page_description %}<meta property="og:description" content="{{ page_description | escape | truncate: 155 }}">{% endif %}
+  {% if page_description %}
+  <meta property="og:description" content="{{ page_description | escape | truncate: 155 }}">
+  {% elsif settings.seo_default_description %}
+  <meta property="og:description" content="{{ settings.seo_default_description | escape }}">
+  {% endif %}
   {% if page_image %}
   <meta property="og:image" content="{{ page_image | image_url: width: 1200 }}">
   <meta property="og:image:secure_url" content="{{ page_image | image_url: width: 1200 }}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="628">
   <meta property="og:image:alt" content="{{ page_title | escape }}">
-  <meta name="twitter:image" content="{{ page_image | image_url: width: 1200 }}">
-  <meta name="twitter:image:alt" content="{{ page_title | escape }}">
   {% elsif settings.social_sharing_image %}
   <meta property="og:image" content="{{ settings.social_sharing_image | image_url: width: 1200 }}">
   <meta property="og:image:secure_url" content="{{ settings.social_sharing_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="628">
+  <meta property="og:image:alt" content="{{ page_title | escape }}">
   {% endif %}
   <meta property="og:type" content="{% if template.name == 'product' %}product{% elsif template.name == 'article' %}article{% else %}website{% endif %}">
+  {% if page_image %}
+  <meta name="twitter:image" content="{{ page_image | image_url: width: 1200 }}">
+  {% elsif settings.social_sharing_image %}
+  <meta name="twitter:image" content="{{ settings.social_sharing_image | image_url: width: 1200 }}">
+  {% endif %}
+  {% if page_image or settings.social_sharing_image %}
+  <meta name="twitter:image:alt" content="{{ page_title | escape }}">
+  {% endif %}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{% if template.name == 'product' and product %}{{ product.title | escape }}{% else %}{{ page_title | escape }}{% endif %}">
-  {% if page_description %}<meta name="twitter:description" content="{{ page_description | escape | truncate: 155 }}">{% endif %}
+  {% if page_description %}
+  <meta name="twitter:description" content="{{ page_description | escape | truncate: 155 }}">
+  {% elsif settings.seo_default_description %}
+  <meta name="twitter:description" content="{{ settings.seo_default_description | escape }}">
+  {% endif %}
+  {% if settings.social_twitter != blank %}
+  <meta name="twitter:site" content="{{ settings.social_twitter | remove: 'https://twitter.com/' | remove: '@' }}">
+  <meta name="twitter:creator" content="{{ settings.social_twitter | remove: 'https://twitter.com/' | remove: '@' }}">
+  {% endif %}
 
   {% if template.name == 'product' and product %}
   <meta property="product:price:amount" content="{{ product.price | money_without_currency }}">
@@ -319,60 +340,10 @@
     };
   </script>
 
-   <script src="{{ 'theme.js' | asset_url }}" defer></script>
+<script src="{{ 'theme.js' | asset_url }}" defer></script>
 
   <!-- Structured Data / JSON-LD (SEO) -->
-  {%- if template.name == 'product' -%}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": {{ product.title | json }},
-      "url": "{{ shop.url }}{{ product.url }}",
-      "image": [
-        {%- for image in product.images limit: 3 -%}
-          "{{ image | image_url: width: 800 }}"{% unless forloop.last %},{% endunless %}
-        {%- endfor -%}
-      ],
-      "description": {{ product.description | strip_html | json }},
-      "brand": {
-        "@type": "Brand",
-        "name": {{ product.vendor | json }}
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": "{{ shop.url }}{{ product.url }}",
-        "priceCurrency": {{ shop.currency | json }},
-        "price": "{{ product.price | money_without_currency }}",
-        "availability": "{% if product.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
-        "seller": {
-          "@type": "Organization",
-          "name": {{ shop.name | json }}
-        }
-      }
-    }
-    </script>
-  {%- endif -%}
-
-  {%- if template.name == 'index' -%}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": {{ shop.name | json }},
-      "url": {{ shop.url | json }},
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "{{ shop.url }}/search?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
-  {%- endif -%}
-
+  {% comment %} Product JSON-LD - complete version with variant, SKU, and aggregateRating {% endcomment %}
   {% if template.name == 'product' %}
   <script type="application/ld+json">
   {
@@ -391,7 +362,7 @@
       "priceCurrency": {{ shop.currency.iso_code | json }},
       "price": "{{ variant.price | money_without_currency }}",
       "priceValidUntil": "{{ 'now' | date: '%Y-12-31' }}",
-      "availability": "{% if variant.available %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+      "availability": "{% if variant.available %}https://schema.org/InStock{% elsif product.metafields.custom.coming_soon_date %}https://schema.org/PreOrder{% else %}https://schema.org/OutOfStock{% endif %}",
       "url": "{{ shop.url }}{{ product.url }}",
       "seller": { "@type": "Organization", "name": {{ shop.name | json }} }
     },
@@ -399,7 +370,8 @@
       "@type": "AggregateRating",
       "ratingValue": "{{ product.metafields.reviews.rating | default: 4.5 }}",
       "reviewCount": "{{ product.metafields.reviews.rating_count | default: 0 }}"
-    }
+    }{% if product.metafields.custom.coming_soon_date %},
+    "availableFrom": "{{ product.metafields.custom.coming_soon_date | date: '%Y-%m-%d' }}"{% endif %}
   }
   </script>
   {% endif %}
