@@ -10,7 +10,7 @@
   /* --- Brand Colors (from design system) --- */
   --color-nav-dark: #232F3E;
   --color-nav-dark-hover: #37475A;
-  --color-accent-red: #C0392B;
+  --color-accent-red: #ff0000;
   --color-accent-red-dark: #962D22;
   --color-accent-red-light: #E74C3C;
   --color-accent-red-tint: #FADBD8;
@@ -35,6 +35,7 @@
 
   /* --- Text --- */
   --color-text-primary: #0F1111;
+  --color-text-primary-btn: #ffffff;
   --color-text-secondary: #565959;
   --color-text-muted: #767676;
   --color-text-white: #FFFFFF;
@@ -363,7 +364,7 @@ details.mobile-menu-item-with-children > summary::-webkit-details-marker { displ
 .product-card__body { padding: var(--space-3); display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .product-card__brand { font-size: var(--font-size-xs); color: var(--color-text-secondary); font-weight: 500; }
 .product-card__title { font-size: var(--font-size-body); font-weight: 500; color: var(--color-text-primary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.product-card__title:hover { color: var(--color-link); }
+.product-card__title:hover { color: var(--color-accent-red); } 
 .product-card__stars { display: flex; align-items: center; gap: 4px; }
 .stars { color: var(--color-stars); font-size: 13px; letter-spacing: -1px; }
 .review-count { font-size: var(--font-size-xs); color: var(--color-link); }
@@ -410,10 +411,10 @@ details.mobile-menu-item-with-children > summary::-webkit-details-marker { displ
   text-decoration: none; border: 1px solid transparent;
   transition: all var(--transition-fast); line-height: 1.4;
 }
-.btn-primary { background: var(--color-accent-red); color: var(--color-text-primary); border-color: var(--color-accent-red-dark); }
-.btn-primary:hover { background: var(--color-accent-red-dark); color: var(--color-text-primary); text-decoration: none; }
-.btn-secondary { background: var(--color-accent-red-light); color: var(--color-text-primary); border-color: #C89411; }
-.btn-secondary:hover { background: #f0c14b; color: var(--color-text-primary); text-decoration: none; }
+.btn-primary { background: var(--color-accent-red); color: var(--color-text-primary-btn); border-color: var(--color-accent-red-dark); }
+.btn-primary:hover { background: var(--color-accent-red-dark); color: var(--color-text-primary-btn); text-decoration: none; }
+.btn-secondary { background: var(--color-accent-red-light); color: var(--color-text-primary-btn); border-color: #C89411; }
+.btn-secondary:hover { background: #f0c14b; color: var(--color-text-primary-btn); text-decoration: none; }
 .btn-blue { background: var(--color-accent-blue); color: var(--color-text-white); border-color: var(--color-accent-blue-dark); }
 .btn-blue:hover { background: var(--color-accent-blue-dark); color: var(--color-text-white); text-decoration: none; }
 .btn-red { background: var(--color-accent-red); color: var(--color-text-white); border-color: var(--color-accent-red-dark); }

@@ -219,11 +219,21 @@ const CartDrawer = (() => {
   }
   async function addItem(variantId, quantity = 1, properties = {}) {
     try {
-      const resp = await fetch('/cart/add.js', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: variantId, quantity, properties })
-      });
-      if (!resp.ok) { const err = await resp.json(); throw new Error(err.description); }
+    const resp = await fetch('/cart/add.js', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity, properties })
+    });
+    if (!resp.ok) {
+      let errMsg = 'Could not add to cart';
+      try {
+        const err = await resp.json();
+        errMsg = err.description || errMsg;
+      } catch (e) {
+        // Response is not JSON (likely HTML error page)
+        errMsg = `Server error (${resp.status})`;
+      }
+      throw new Error(errMsg);
+    }
       await refresh();
       open();
       Toast.show('Added to cart!', 'success');
@@ -514,9 +524,22 @@ document.addEventListener('click', e => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: variantId, quantity: qty })
     })
-    .then(res => res.json())
+    .then(async res => {
+      if (!res.ok) {
+        let errMsg = 'Failed to add to cart';
+        try {
+          const err = await res.json();
+          errMsg = err.description || errMsg;
+        } catch (e) {
+          // Response is not JSON (likely HTML error page)
+          errMsg = `Server error (${res.status})`;
+        }
+        throw new Error(errMsg);
+      }
+      return res.json();
+    })
     .then(() => { window.location.href = '/checkout'; })
-    .catch(err => { console.error('Quick buy error:', err); Toast.show('Failed to add to cart', 'error'); });
+    .catch(err => { console.error('Quick buy error:', err); Toast.show(err.message || 'Failed to add to cart', 'error'); });
   }
   // Close cart
   if (e.target.matches('#cart-drawer-close') || e.target.closest('#cart-drawer-close')) {
