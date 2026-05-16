@@ -6,7 +6,7 @@
     <!-- Logo -->
     <div class="auth-logo" style="margin-bottom:var(--space-4)">
       <a href="{{ routes.root_url }}" style="font-size:26px;font-weight:800;color:var(--color-nav-dark);text-decoration:none">
-        {{ shop.name | split: ' ' | first }}<span style="color:var(--color-accent-orange)">{{ shop.name | split: ' ' | last }}</span>
+        {{ shop.name | split: ' ' | first }}<span style="color:var(--color-accent-red)">{{ shop.name | split: ' ' | last }}</span>
       </a>
     </div>
 
@@ -99,7 +99,7 @@ document.getElementById('reg-password')?.addEventListener('input', function() {
   const levels = [
     { pct: '0%', color: 'transparent', text: '' },
     { pct: '25%', color: '#B12704', text: 'Weak' },
-    { pct: '50%', color: '#FF9900', text: 'Fair' },
+    { pct: '50%', color: '#C0392B', text: 'Fair' },
     { pct: '75%', color: '#067D62', text: 'Good' },
     { pct: '100%', color: '#007185', text: 'Strong' }
   ];

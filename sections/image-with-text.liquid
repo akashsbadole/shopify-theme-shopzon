@@ -44,7 +44,7 @@
           {% if block.type == 'stat' %}
             <div {{ block.shopify_attributes }} style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;border-top:1px solid rgba(0,0,0,0.08)">
               {% if block.settings.icon != blank %}
-                <span class="material-symbols-outlined" style="font-size:28px;color:var(--color-accent-orange);flex-shrink:0">{{ block.settings.icon }}</span>
+                <span class="material-symbols-outlined" style="font-size:28px;color:var(--color-accent-red);flex-shrink:0">{{ block.settings.icon }}</span>
               {% endif %}
               <div>
                 <div style="font-size:22px;font-weight:800;color:{{ section.settings.text_color }}">{{ block.settings.number }}</div>

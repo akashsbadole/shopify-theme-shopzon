@@ -8,7 +8,7 @@
     <span aria-current="page">{{ collection.title }}</span>
   </nav>
 
-  <div style="background:linear-gradient(135deg,#232F3E,#FF9900);border-radius:var(--border-radius);padding:var(--space-6);margin-bottom:var(--space-5);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4)">
+  <div style="background:linear-gradient(135deg,#232F3E,#C0392B);border-radius:var(--border-radius);padding:var(--space-6);margin-bottom:var(--space-5);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4)">
     <div>
       <h1 style="font-size:var(--font-size-2xl);font-weight:800;color:#fff;margin-bottom:var(--space-2)">{{ collection.title }}</h1>
       {% if collection.description != blank %}
@@ -24,12 +24,12 @@
       {% endif %}
     {% endfor %}
     <div style="background:rgba(255,255,255,0.15);border-radius:var(--border-radius);padding:var(--space-4) var(--space-5);text-align:center">
-      <div style="font-size:32px;font-weight:800;color:#FF9900;line-height:1">{{ deal_count }}</div>
+      <div style="font-size:32px;font-weight:800;color:#C0392B;line-height:1">{{ deal_count }}</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.08em">Hot Deals</div>
     </div>
   </div>
 
-  <div style="background:var(--color-accent-orange);border-radius:var(--border-radius);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-5);display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap">
+  <div style="background:var(--color-accent-red);border-radius:var(--border-radius);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-5);display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap">
     <span class="material-symbols-outlined" style="font-size:18px;color:#131921">local_fire_department</span>
     <span style="font-size:13px;font-weight:600;color:#131921">Hurry! Deals end soon. Extra 5% off applied at checkout with code: <strong>SAVE5</strong></span>
   </div>

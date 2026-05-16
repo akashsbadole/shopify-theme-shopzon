@@ -4,7 +4,7 @@
       {% if section.settings.title != blank %}
         <div style="text-align:{{ section.settings.text_align }};margin-bottom:var(--space-6)">
           {% if section.settings.eyebrow != blank %}
-            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-accent-orange);margin-bottom:var(--space-2)">{{ section.settings.eyebrow }}</div>
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--color-accent-red);margin-bottom:var(--space-2)">{{ section.settings.eyebrow }}</div>
           {% endif %}
           <h2 style="font-size:var(--font-size-2xl);font-weight:700">{{ section.settings.title }}</h2>
           {% if section.settings.subtitle != blank %}
@@ -20,7 +20,7 @@
               style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden">
               <summary style="padding:var(--space-4);display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;font-size:var(--font-size-body);font-weight:600;color:var(--color-text-primary);gap:var(--space-3)">
                 <span>{{ block.settings.question }}</span>
-                <span class="material-symbols-outlined faq-icon" style="font-size:22px;flex-shrink:0;color:var(--color-accent-orange);transition:transform 0.25s ease">expand_more</span>
+                <span class="material-symbols-outlined faq-icon" style="font-size:22px;flex-shrink:0;color:var(--color-accent-red);transition:transform 0.25s ease">expand_more</span>
               </summary>
               <div style="padding:0 var(--space-4) var(--space-4);font-size:var(--font-size-body);color:var(--color-text-secondary);line-height:1.7;border-top:1px solid var(--color-divider);padding-top:var(--space-3)">
                 {{ block.settings.answer }}

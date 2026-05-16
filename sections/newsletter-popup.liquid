@@ -12,7 +12,7 @@
       {% if section.settings.image != blank %}
         {{ section.settings.image | image_url: width: 600 | image_tag: loading: 'lazy', alt: section.settings.title, style: 'width:100%;height:100%;object-fit:cover' }}
       {% else %}
-        <div style="width:100%;height:100%;background:linear-gradient(135deg,#232F3E,#FF9900);display:flex;align-items:center;justify-content:center;min-height:300px">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#232F3E,#C0392B);display:flex;align-items:center;justify-content:center;min-height:300px">
           <span class="material-symbols-outlined" style="font-size:72px;color:rgba(255,255,255,0.3)">local_offer</span>
         </div>
       {% endif %}

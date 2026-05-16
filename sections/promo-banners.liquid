@@ -16,11 +16,11 @@
                 <div style="font-size:13px;opacity:0.8">{{ block.settings.subtitle }}</div>
               {% endif %}
             </div>
-            <span style="font-size:13px;font-weight:600;color:{{ block.settings.link_color | default: '#FF9900' }};margin-top:12px">
+            <span style="font-size:13px;font-weight:600;color:{{ block.settings.link_color | default: '#E74C3C' }};margin-top:12px">
               {{ block.settings.cta_text | default: 'Shop now' }} ›
             </span>
             {% if block.settings.badge != blank %}
-              <div style="position:absolute;top:12px;right:12px;background:var(--color-accent-orange);color:#131921;font-size:11px;font-weight:700;padding:3px 8px;border-radius:2px;text-transform:uppercase">{{ block.settings.badge }}</div>
+              <div style="position:absolute;top:12px;right:12px;background:var(--color-accent-red);color:#131921;font-size:11px;font-weight:700;padding:3px 8px;border-radius:2px;text-transform:uppercase">{{ block.settings.badge }}</div>
             {% endif %}
           </a>
         {% endif %}
@@ -45,7 +45,7 @@
         { "type": "url", "id": "url", "label": "Link URL" },
         { "type": "color", "id": "bg_color", "label": "Background color", "default": "#232F3E" },
         { "type": "color", "id": "text_color", "label": "Text color", "default": "#FFFFFF" },
-        { "type": "color", "id": "link_color", "label": "Link color", "default": "#FF9900" }
+        { "type": "color", "id": "link_color", "label": "Link color", "default": "#E74C3C" }
       ]
     }
   ],

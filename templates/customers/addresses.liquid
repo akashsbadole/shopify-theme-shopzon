@@ -13,10 +13,10 @@
     <aside>
       <div style="background:var(--color-surface-white);border:1px solid var(--color-border);border-radius:var(--border-radius);overflow:hidden">
         <a href="{{ routes.account_url }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--color-divider);color:var(--color-text-primary);text-decoration:none;font-size:14px;font-weight:500" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background=''">
-          <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-accent-orange)">orders</span> Orders
+          <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-accent-red)">orders</span> Orders
         </a>
         <a href="{{ routes.account_addresses_url }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--color-divider);color:var(--color-text-primary);text-decoration:none;font-size:14px;font-weight:700;background:var(--color-surface)">
-          <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-accent-orange)">location_on</span> Addresses
+          <span class="material-symbols-outlined" style="font-size:18px;color:var(--color-accent-red)">location_on</span> Addresses
         </a>
         <a href="{{ routes.account_logout_url }}" style="display:flex;align-items:center;gap:10px;padding:12px 16px;color:var(--color-error);text-decoration:none;font-size:14px;font-weight:500" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background=''">
           <span class="material-symbols-outlined" style="font-size:18px">logout</span> Sign Out
@@ -50,11 +50,11 @@
       {% if customer.addresses.size > 0 %}
         <div style="display:grid;gap:var(--space-3)">
           {% for address in customer.addresses %}
-            <div style="background:var(--color-surface-white);border:{% if address == customer.default_address %}2px solid var(--color-accent-orange){% else %}1px solid var(--color-border){% endif %};border-radius:var(--border-radius);padding:var(--space-4)">
+            <div style="background:var(--color-surface-white);border:{% if address == customer.default_address %}2px solid var(--color-accent-red){% else %}1px solid var(--color-border){% endif %};border-radius:var(--border-radius);padding:var(--space-4)">
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3)">
                 <div>
                   {% if address == customer.default_address %}
-                    <span style="background:var(--color-accent-orange);color:#131921;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin-bottom:8px">Default</span>
+                    <span style="background:var(--color-accent-red);color:#131921;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;display:inline-block;margin-bottom:8px">Default</span>
                   {% endif %}
                   <address style="font-style:normal;font-size:14px;line-height:1.8;color:var(--color-text-primary)">
                     <strong>{{ address.name }}</strong><br>

@@ -113,7 +113,7 @@
                 {{ 'products.inventory.low_stock_show_count' | t: quantity: stock | default: 'Only ' | append: stock | append: ' left!' }}
               </span>
             {%- elsif stock <= 20 -%}
-              <span style="color:var(--color-accent-orange);font-size:13px">
+              <span style="color:var(--color-accent-red);font-size:13px">
                 {{ 'products.inventory.in_stock' | t | default: 'In stock' }} — {{ 'products.inventory.order_soon' | t | default: 'order soon' }}
               </span>
             {%- else -%}
@@ -328,10 +328,10 @@
       </summary>
       <div class="accordion-body">
         {% if product.available == false %}
-          <div style="background:rgba(255,153,0,0.1);border-radius:var(--border-radius);padding:var(--space-4);margin-bottom:var(--space-3);display:flex;align-items:flex-start;gap:var(--space-3)">
-            <span class="material-symbols-outlined" style="font-size:20px;color:var(--color-accent-orange);flex-shrink:0">schedule</span>
+          <div style="background:rgba(192,57,43,0.1);border-radius:var(--border-radius);padding:var(--space-4);margin-bottom:var(--space-3);display:flex;align-items:flex-start;gap:var(--space-3)">
+            <span class="material-symbols-outlined" style="font-size:20px;color:var(--color-accent-red);flex-shrink:0">schedule</span>
             <div>
-              <strong style="color:var(--color-accent-orange)">Coming Soon!</strong>
+              <strong style="color:var(--color-accent-red)">Coming Soon!</strong>
               <p style="font-size:var(--font-size-sm);color:var(--color-text-secondary);margin-top:4px">This item is currently out of stock. Enter your email below to get notified the moment it's back!</p>
               <form class="back-in-stock__form" id="bis-form-product" style="margin-top:var(--space-3);display:flex;gap:var(--space-2)">
                 <input type="email" name="email" class="field-input" placeholder="your@email.com" required style="flex:1;font-size:13px;padding:8px 12px">
