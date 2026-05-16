@@ -20,11 +20,9 @@
   --color-success: #067D62;
   --color-error: #B12704;
   
-  /* --- Blue & Red Accent Colors --- */
+  /* --- Blue Accent --- */
   --color-accent-blue: #0066CC;
   --color-accent-blue-dark: #0052A3;
-  --color-accent-red: #D32F2F;
-  --color-accent-red-dark: #B71C1C;
 
   /* --- Surface System --- */
   --color-surface: #F3F3F3;
